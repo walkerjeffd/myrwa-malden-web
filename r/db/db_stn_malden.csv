@@ -1,0 +1,4 @@
+LocationID,LocationDescription,WaterBodyID,MunicipalityID,Latitude,Longitude,LocationTypeID,LocationMethod,CoordinateSystem,InWatershed,RegionalID,WaterType,Owner,StaffGage,County,CatchmentArea_Sqmi
+MAR003,,Malden River,Medford,42.3995,-71.0753666666667,22,GPS-Unspecified,WGS84,1,Upper Mystic River,Fresh,,0,Middlesex,NA
+MAR036,Malden River at Medford Street Bridge in Malden; upstream side of the bridge,Malden River,Malden,42.4175,-71.073283,22,GPS-Unspecified,WGS84,1,Upper Mystic River,Fresh,NA,0,Middlesex,NA
+MWRA176,"MALDEN RIVER, UPSTREAM OF RT 16 BRIDGE",Malden River,Everett,42.4053,-71.07191,22,unknown,WGS84,1,Upper Mystic River,Fresh,,0,Middlesex,NA
