@@ -1,0 +1,20 @@
+{
+  "name": "myrwa-malden-web",
+  "version": "1.0.0",
+  "description": "Malden River Water Quality Website ==================================",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server ./public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walkerjeffd/myrwa-malden-web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/walkerjeffd/myrwa-malden-web/issues"
+  },
+  "homepage": "https://github.com/walkerjeffd/myrwa-malden-web#readme"
+}
