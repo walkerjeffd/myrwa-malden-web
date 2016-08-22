@@ -57,7 +57,6 @@ wq_malden_prcp <- wq_malden %>%
 # export ------------------------------------------------------------------
 
 wq_malden_prcp %>%
-  mutate(datetime = format(datetime, "%Y-%m-%d %H:%M")) %>%
   select(-datehour) %>%
   write_csv(path = "../public/data/wq.csv", na = "null")
 
@@ -65,5 +64,4 @@ stn_malden %>%
   write_csv(path = "../public/data/stn.csv")
 
 prcp %>%
-  mutate(datetime = format(datetime, "%Y-%m-%d %H:%M")) %>%
   write_csv(path = "../public/data/prcp.csv", na = "null")
