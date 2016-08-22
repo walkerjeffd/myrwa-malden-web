@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Malden River Water Quality</title>
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" /> -->
+  <style>
+    svg {
+      font: 10px sans-serif;
+    }
+
+    path.line {
+      fill: none;
+      stroke: #666;
+      stroke-width: 1.5px;
+    }
+
+    path.area {
+      fill: #e7e7e7;
+    }
+
+    path.hline {
+      fill: none;
+      stroke: red;
+      stroke-width: 1.5px;
+    }
+
+    .axis {
+      shape-rendering: crispEdges;
+      fill: none;
+      stroke: #000;
+    }
+
+    .d3-tip {
+      line-height: 1;
+      font-weight: bold;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      border-radius: 2px;
+      pointer-events: none;
+      font: 14px sans-serif;
+    }
+
+    /* Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+      box-sizing: border-box;
+      display: inline;
+      font-size: 10px;
+      width: 100%;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.8);
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Northward tooltips */
+    .d3-tip.n:after {
+      content: "\25BC";
+      margin: -1px 0 0 0;
+      top: 100%;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Eastward tooltips */
+    .d3-tip.e:after {
+      content: "\25C0";
+      margin: -4px 0 0 0;
+      top: 50%;
+      left: -8px;
+    }
+
+    /* Southward tooltips */
+    .d3-tip.s:after {
+      content: "\25B2";
+      margin: 0 0 1px 0;
+      top: -8px;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Westward tooltips */
+    .d3-tip.w:after {
+      content: "\25B6";
+      margin: -4px 0 0 -1px;
+      top: 50%;
+      left: 100%;
+    }
+  </style>
+</head>
+<body>
+<h1>Water Quality Conditions on the Malden River</h1>
+
+<hr>
+
+<div id="chart-time">
+</div>
+<div id="chart-precip48">
+</div>
+
+<hr>
+
+<p>Developed by <a href="http://walkerenvres.com">Walker Environmental Research, LLC</a> for the <a href="http://mysticriver.org">Mystic River Watershed Association</a></p>
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script> -->
+
+<script>
+var url_wq = '/data/wq.csv';
+var utcFormat = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
+
+var state = {
+  limit: 235,
+  charts: {}
+}
+
+
+
+d3.csv(url_wq)
+  .row(function (d) {
+    return {
+      site: d.site,
+      param: d.param,
+      datetime: utcFormat.parse(d.datetime),
+      value: +d.value,
+      precip: +d.precip,
+      precip48: +d.precip48
+    }
+  })
+  .get(function (error, rows) {
+    if (error) {
+      console.log("Error: ", error);
+      return;
+    }
+
+    state.data = rows.filter(function (d) {
+      return d.param === "ECOLI";
+    });
+
+    setup(state);
+  });
+
+function setup (state) {
+  state.charts.time = timeChart().hline(state.limit);
+  state.charts.precip48 = scatterChart().hline(state.limit);
+
+  d3.select("#chart-time")
+    .call(state.charts.time);
+  d3.select("#chart-precip48")
+    .call(state.charts.precip48);
+
+  draw(state);
+}
+
+function updateData (data) {
+  return data.map(function (d) {
+    d.exceed = d.value > state.limit;
+    return d;
+  });
+}
+
+function draw (state) {
+  state.data = updateData(state.data);
+  state.charts.time.hline(state.limit).update(state.data);
+  state.charts.precip48.hline(state.limit).update(state.data);
+}
+
+
+var scatterChart = function () {
+  var margin = {top: 20, right: 20, bottom: 40, left: 80},
+    width = 500,
+    height = 500,
+    xValue = function(d) { return d.precip48; },
+    yValue = function(d) { return d.value; },
+    xScale = d3.scale.linear(),
+    yScale = d3.scale.log(),
+    datetimeFormat = d3.time.format("%x %X"),
+    hlineData,
+    valueFormat = d3.format(",.0f"),
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom"),
+    yAxis = d3.svg.axis().scale(yScale).orient("left").tickFormat(valueFormat),
+    line = d3.svg.line().x(X).y(Y),
+    svg, g;
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      return "<span>Station: </span> <strong>" + d.site + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.datetime) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.value) + " #/100mL</strong>";
+    })
+
+  var chart = function (selection) {
+    xScale
+      .range([0, width - margin.left - margin.right]);
+
+    yScale
+      .range([height - margin.top - margin.bottom, 0]);
+
+    svg = selection.append("svg");
+
+    g = svg.append("g");
+    g.append("g").attr("class", "circles");
+    g.append("g").attr("class", "hlines");
+    g.append("g").attr("class", "y axis");
+    g.append("g").attr("class", "x axis");
+
+    svg.call(tip);
+
+    svg.attr("width", width)
+       .attr("height", height);
+
+    svg = svg.select("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    g.select(".y.axis");
+
+    g.select(".x.axis")
+      .attr("transform", "translate(0," + yScale.range()[0] + ")");
+  }
+
+  chart.update = function (data) {
+    data = data.filter(function (d) {
+      return isFinite(d.value) && isFinite(d.precip48);
+    });
+
+    xScale
+      .domain([0, d3.max(data, xValue)]);
+
+    yScale
+      .domain([1, d3.max(data, yValue)]);
+
+    g.select(".y.axis")
+        .call(yAxis);
+
+    g.select(".x.axis")
+        .call(xAxis);
+
+    var gCircle = svg.select("g.circles");
+    var circle = gCircle.selectAll('circle')
+      .data(data);
+
+    circle.enter()
+      .append("circle");
+
+    circle.attr("cx", X)
+      .attr("cy", Y)
+      .attr("r", 2)
+      .style("fill", function (d) {
+        return d.exceed ? "red" : "steelblue";
+      })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+    circle.exit()
+      .remove();
+
+    if (hlineData) {
+
+      var gHline = svg.select("g.hlines");
+
+      var hline = gHline.selectAll("path")
+        .data([
+          [
+            {
+              precip48: xScale.domain()[0],
+              value: hlineData
+            }, {
+              precip48: xScale.domain()[1],
+              value: hlineData
+            }
+          ]
+        ]);
+
+      hline.enter()
+        .append("path");
+
+      hline
+        .attr("d", line)
+        .attr("stroke-dasharray", "5,5")
+        .attr("class", "hline");
+
+      hline.exit()
+        .remove();
+    }
+
+  };
+
+  function X(d) {
+    return xScale(xValue(d));
+  }
+
+  function Y(d) {
+    return yScale(yValue(d));
+  }
+
+  chart.margin = function(_) {
+    if (!arguments.length) return margin;
+    margin = _;
+    return chart;
+  };
+
+  chart.width = function(_) {
+    if (!arguments.length) return width;
+    width = _;
+    return chart;
+  };
+
+  chart.height = function(_) {
+    if (!arguments.length) return height;
+    height = _;
+    return chart;
+  };
+
+  chart.x = function(_) {
+    if (!arguments.length) return xValue;
+    xValue = _;
+    return chart;
+  };
+
+  chart.y = function(_) {
+    if (!arguments.length) return yValue;
+    yValue = _;
+    return chart;
+  };
+
+  chart.hline = function (_) {
+    if (!arguments.length) return hlineData;
+    hlineData = _;
+    return chart;
+  }
+
+  return chart;
+}
+
+
+var timeChart = function () {
+  var margin = {top: 20, right: 20, bottom: 40, left: 80},
+    width = 760,
+    height = 400,
+    xValue = function(d) { return d.datetime; },
+    yValue = function(d) { return d.value; },
+    xScale = d3.time.scale(),
+    yScale = d3.scale.log(),
+    datetimeFormat = d3.time.format("%x %X"),
+    hlineData,
+    valueFormat = d3.format(",.0f"),
+    xAxis = d3.svg.axis().scale(xScale).orient("bottom"),
+    yAxis = d3.svg.axis().scale(yScale).orient("left").tickFormat(valueFormat),
+    line = d3.svg.line().x(X).y(Y),
+    svg, g;
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      return "<span>Station: </span> <strong>" + d.site + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.datetime) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.value) + " #/100mL</strong>";
+    })
+
+  var chart = function (selection) {
+    xScale
+      .range([0, width - margin.left - margin.right]);
+
+    yScale
+      .range([height - margin.top - margin.bottom, 0]);
+
+    svg = selection.append("svg");
+
+    g = svg.append("g");
+    g.append("g").attr("class", "circles");
+    g.append("g").attr("class", "hlines");
+    g.append("g").attr("class", "y axis");
+    g.append("g").attr("class", "x axis");
+
+    svg.call(tip);
+
+    svg.attr("width", width)
+       .attr("height", height);
+
+    svg = svg.select("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    g.select(".y.axis");
+
+    g.select(".x.axis")
+      .attr("transform", "translate(0," + yScale.range()[0] + ")");
+  }
+
+  chart.update = function (data) {
+    xScale
+      .domain(d3.extent(data, xValue));
+
+    yScale
+      .domain([1, d3.max(data, yValue)]);
+
+    g.select(".y.axis")
+        .call(yAxis);
+
+    g.select(".x.axis")
+        .call(xAxis);
+
+    var gCircle = svg.select("g.circles");
+    var circle = gCircle.selectAll('circle')
+      .data(data);
+
+    circle.enter()
+      .append("circle");
+
+    circle.attr("cx", X)
+      .attr("cy", Y)
+      .attr("r", 2)
+      .style("fill", function (d) {
+        return d.exceed ? "red" : "steelblue";
+      })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+    circle.exit()
+      .remove();
+
+    if (hlineData) {
+      var hlineData2 = [
+        {
+          datetime: xScale.domain()[0],
+          value: hlineData
+        },
+        {
+          datetime: xScale.domain()[1],
+          value: hlineData
+        }
+      ];
+
+      var gHline = svg.select("g.hlines");
+
+      var hline = gHline.selectAll("path")
+        .data([hlineData2]);
+
+      hline.enter()
+        .append("path");
+
+      hline
+        .attr("d", line)
+        .attr("stroke-dasharray", "5,5")
+        .attr("class", "hline");
+
+      hline.exit()
+        .remove();
+
+      console.log(hlineData2);
+    }
+
+  };
+
+  function X(d) {
+    return xScale(xValue(d));
+  }
+
+  function Y(d) {
+    return yScale(yValue(d));
+  }
+
+  chart.margin = function(_) {
+    if (!arguments.length) return margin;
+    margin = _;
+    return chart;
+  };
+
+  chart.width = function(_) {
+    if (!arguments.length) return width;
+    width = _;
+    return chart;
+  };
+
+  chart.height = function(_) {
+    if (!arguments.length) return height;
+    height = _;
+    return chart;
+  };
+
+  chart.x = function(_) {
+    if (!arguments.length) return xValue;
+    xValue = _;
+    return chart;
+  };
+
+  chart.y = function(_) {
+    if (!arguments.length) return yValue;
+    yValue = _;
+    return chart;
+  };
+
+  chart.hline = function (_) {
+    if (!arguments.length) return hlineData;
+    hlineData = _;
+    return chart;
+  }
+
+  return chart;
+}
+
+</script>
+
+</body>
+</html>
