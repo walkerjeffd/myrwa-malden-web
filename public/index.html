@@ -5,18 +5,22 @@
   <title>Malden River Water Quality</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" /> -->
+  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
 
   <style>
     div.dc-chart {
       float: none;
     }
+
     svg {
       font: 12px sans-serif;
     }
+
     .chart-title {
       font: 14px sans-serif;
     }
+
+    #map { height: 400px; }
 
     .d3-tip {
       line-height: 1;
@@ -137,12 +141,22 @@
   </div>
 
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-4">
       <div id="chart-month">
         <span class="chart-title">Sample Month</span>
         <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
         <div class="clearfix"></div>
       </div>
+    </div>
+    <div class="col-xs-2">
+      <div id="chart-site">
+        <span class="chart-title">Sample Station</span>
+        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div id="map"></div>
     </div>
   </div>
 
@@ -160,7 +174,7 @@
 <script src="https://d3js.org/queue.v1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
 <script src="http://dc-js.github.io/dc.js/js/dc.js"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script> -->
+<script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
 
 <script>
 var ndx;
@@ -181,6 +195,40 @@ var state = {
   xf: {},
   charts: {}
 };
+
+var map = L.map('map').setView([42.41, -71.072], 13);
+
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+
+L.marker([42.4175, -71.073283]).addTo(map)
+  .bindPopup('Station: <strong>MAR036</strong><br>Organization: <strong>Mystic River Watershed Association</strong>')
+  .on('click', function (e) {
+    state.charts.site.filter([['MAR036']]);
+  })
+  .on('mouseover', function (e) {
+    this.openPopup();
+  })
+  .on('mouseout', function (e) {
+    this.closePopup();
+  });
+L.marker([42.4053, -71.07191]).addTo(map)
+  .bindPopup('Station: <strong>MWRA176</strong><br>Organization: <strong>Massachusetts Water Resources Authority</strong>')
+  .on('click', function () {
+    if (state.charts.site.hasFilter() &&
+        !state.charts.site.hasFilter(d.key)) {
+      return d.key + ' (0%)';
+    }
+    state.charts.site.filter([['MWRA176']])
+  })
+  .on('mouseover', function (e) {
+    this.openPopup();
+  })
+  .on('mouseout', function (e) {
+    this.closePopup();
+  });
 
 d3.csv(url_wq)
   .row(function (d) {
@@ -222,6 +270,12 @@ function setup (state) {
     return [d.datetime, d.value, d.site];
   });
   state.xf.time.group = state.xf.time.dim.group();
+
+  state.xf.site = {};
+  state.xf.site.dim = state.ndx.dimension(function (d) {
+    return d.site;
+  });
+  state.xf.site.group = state.xf.site.dim.group();
 
   state.xf.exceed = {};
   state.xf.exceed.dim = state.ndx.dimension(function (d) {
@@ -410,6 +464,16 @@ function setup (state) {
     .dimension(state.xf.month.dim)
     .group(state.xf.month.group);
 
+  state.charts.site = dc.barChart('#chart-site');
+  state.charts.site
+    .width(200)
+    .height(200)
+    .x(d3.scale.ordinal())
+    .yAxisLabel("# of Samples")
+    .xUnits(dc.units.ordinal)
+    .dimension(state.xf.site.dim)
+    .group(state.xf.site.group);
+
 
   state.charts.precip = dc.scatterPlot('#chart-precip');
   state.charts.precip
@@ -468,10 +532,10 @@ function setup (state) {
           .attr('text-anchor', 'start')
           .attr('class', 'vline-label')
           .text('Rainfall Threshold')
-          .attr('x', chart.x()(state.params.precip48))
-          .attr('y', chart.y().range()[0])
           .attr('dx', '0.5em')
           .attr('dy', '-0.5em');
+      text.attr('x', chart.x()(state.params.precip48))
+          .attr('y', chart.y().range()[0]);
 
       // horizontal line
       extra_data = [
