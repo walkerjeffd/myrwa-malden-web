@@ -5,7 +5,8 @@
   <title>Stepper Example</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
-  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
   <style>
     div.dc-chart {
       float: none;
@@ -85,72 +86,67 @@
       width: 100%;
     }
 
-    .step-container {
+    .stepper {
       position: relative;
       width: 980px;
       height: 500px;
-      background-color: #eee;
-      z-index: 40;
+      background-color: #fff;
       margin-top: 10px;
     }
 
-    .step-annotation {
+    .annotation-container {
       position: absolute;
-      display: none;
+      width: 220px;
+      height: 100%;
+      background-color: #fff;
     }
 
     .annotation {
       position: absolute;
-    }
-
-    #step1-annotation {
+      display: none;
       left: 10px;
       top: 10px;
       width: 200px;
     }
 
-    #step2-annotation {
-      left: 10px;
-      top: 10px;
-      width: 200px;
+    .annotation > h2 {
+      margin-top: 10px;
+      font-size: 20px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #bbb;
     }
 
-    #step3-annotation {
-      left: 10px;
-      top: 10px;
-      width: 200px;
-    }
-
-    .viz-container {
+    .chart-container {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
+      width: 720px;
+      height: 460px;
+      top: 20px;
+      left: 240px;
       z-index: 60;
     }
 
     #map {
       position: absolute;
-      height: 480px;
-      width: 670px;
-      top: 10px;
-      left: 300px;
+      height: 460px;
+      width: 720px;
+      top: 0;
+      left: 0;
     }
 
     #step1-chart {
       position: absolute;
       height: 300px;
-      width: 670px;
+      width: 720px;
       top: 10px;
-      left: 300px;
+      left: 0;
     }
 
     .loading {
-      background: rgb(200, 200, 200);
-      font-size: 30px;
+      background: #eee;
+      font-size: 36px;
       position: absolute;
       text-align: center;
+      padding-top: 160px;
       top: 0;
       left: 0;
       z-index: 100;
@@ -174,29 +170,49 @@
     </div>
   </div>
 
-  <div class="step-container">
-    <div class="step-container">
-      <div class="step-annotation" id="step1-annotation" style="display:block">
+  <div class="stepper">
+    <div class="annotation-container">
+      <div class="annotation" id="step1-annotation" style="display:block">
         <h2>Sampling Location</h2>
-        <p>Each month, MyRWA volunteers collect water quality samples on the Malden River as part of the <a href="http://mysticriver.org/baseline/" target="_blank">Baseline Water Quality Monitoring Program</a>.</p>
-        <p>This map shows the location where samples are collected. This location is referred to as sampling station MAR036.</p>
+        <p>Each month, MyRWA volunteers collect water quality samples throughout the Mystic River watershed as part of the <a href="http://mysticriver.org/baseline/" target="_blank">Baseline Water Quality Monitoring Program</a>.</p>
+        <p>This map shows the monitoring station where samples are collected on the Malden River (Station ID: MAR036).</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default disabled"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step2')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
       </div>
-      <div class="step-annotation" id="step2-annotation">
+      <div class="annotation" id="step2-annotation">
         <h2>E. coli Samples</h2>
         <p>Each sample is analyzed for E. coli, which is known as an indicator bacteria.</p>
         <p>The chart shows the E. coli levels of each sample over the past 14 years.</p>
+        <p>But which samples are too high? How often is the river safe for boating?</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step1')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step3')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
       </div>
-      <div class="step-annotation" id="step3-annotation">
+      <div class="annotation" id="step3-annotation">
         <h2>Boating Standard</h2>
         <p>The horizontal line shows the Massachusetts water quality standard for E. coli, which states that no sample should exceed 1,260 #/100mL in waterways used for boating and other "secondary" recreational uses.</p>
         <p>Samples above the standard (in red) are called "exceedences" and indicate times when conditions were associated with an elevated risk of illness.</p>
         <p>Samples below the standard (in blue) indicate times when the risk of illness was low.</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step2')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default disabled">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="viz-container">
+    <div class="chart-container">
     </div>
     <div class="loading">
-      Loading...
+      <p>Loading...</p>
+      <p><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></p>
     </div>
   </div>
 
@@ -224,7 +240,7 @@ var state = {
 steps.step1 = {
   enter: function () {
     console.log('step1.enter()');
-    d3.select('.viz-container').append('div').attr('id', 'map');
+    d3.select('.chart-container').append('div').attr('id', 'map');
     this.map = L.map('map').setView([42.41, -71.072], 14);
 
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -259,7 +275,7 @@ steps.step1 = {
 steps.step2 = {
   enter: function () {
     console.log('step2.enter()');
-    this.el = d3.select('.viz-container').append('div').attr('id', 'step1-chart');
+    this.el = d3.select('.chart-container').append('div').attr('id', 'step1-chart');
     this.chart = setupTimeseries(this.el);
     this.chart.render();
   },
@@ -280,7 +296,7 @@ steps.step2 = {
 steps.step3 = {
   enter: function () {
     console.log('step3.enter()');
-    this.el = d3.select('.viz-container').append('div').attr('id', 'step1-chart');
+    this.el = d3.select('.chart-container').append('div').attr('id', 'step1-chart');
     this.chart = setupTimeseries2(this.el);
     this.chart.render();
   },
@@ -304,9 +320,9 @@ d3.selectAll('.btn-step').on('click', function () {
 });
 
 function switchStep (step) {
-  d3.selectAll('.btn-step').classed('btn-success', false).classed('btn-default', true);
+  d3.selectAll('.btn-step').classed('btn-primary', false).classed('btn-default', true);
   d3.select('#' + step).classed('btn-default', false);
-  d3.select('#' + step).classed('btn-success', true);
+  d3.select('#' + step).classed('btn-primary', true);
   switchAnnotation(step);
 
   if (state.step) {
@@ -321,7 +337,7 @@ function switchStep (step) {
 }
 
 function switchAnnotation (step) {
-  d3.selectAll('.step-annotation').style('display', 'none');
+  d3.selectAll('.annotation').style('display', 'none');
   d3.select('#' + step + '-annotation').style('display', 'block');
 }
 
@@ -367,6 +383,14 @@ function initialize () {
       });
       state.xf.time.group = state.xf.time.dim.group();
 
+
+      state.xf.site = {};
+      state.xf.site.dim = state.ndx.dimension(function (d) {
+        return d.site;
+      });
+      state.xf.site.group = state.xf.site.dim.group();
+
+
       // remove loading frame
       d3.select('.loading')
         .transition()
@@ -397,12 +421,6 @@ function setupCrossfilter () {
   //   return [d.datetime, d.value, d.site];
   // });
   // state.xf.time.group = state.xf.time.dim.group();
-
-  // state.xf.site = {};
-  // state.xf.site.dim = state.ndx.dimension(function (d) {
-  //   return d.site;
-  // });
-  // state.xf.site.group = state.xf.site.dim.group();
 
   // state.xf.exceed = {};
   // state.xf.exceed.dim = state.ndx.dimension(function (d) {
@@ -448,7 +466,7 @@ function setupTimeseries (el) {
     });
 
   var chart = dc.scatterPlot(el)
-    .width(670)
+    .width(720)
     .height(300)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .x(timeScale)
@@ -466,10 +484,7 @@ function setupTimeseries (el) {
       chart.select("svg").call(tip);
 
       chart.selectAll("path.symbol")
-        .on('mouseover', function (d, i) {
-          console.log(d);
-          tip.show(d, i);
-        })
+        .on('mouseover', tip.show)
         .on('mouseout', tip.hide);
     });
   var tickValues = [];
@@ -505,7 +520,7 @@ function setupTimeseries2 (el) {
     });
 
   var chart = dc.scatterPlot(el)
-    .width(670)
+    .width(720)
     .height(300)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .x(timeScale)
