@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stepper Example</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
+  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+  <style>
+    div.dc-chart {
+      float: none;
+    }
+
+    svg {
+      font: 12px sans-serif;
+    }
+
+    .chart-title {
+      font: 14px sans-serif;
+    }
+
+    .d3-tip {
+      line-height: 1;
+      font-weight: bold;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      border-radius: 2px;
+      pointer-events: none;
+      font: 14px sans-serif;
+      z-index: 200;
+    }
+
+    /* Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+      box-sizing: border-box;
+      display: inline;
+      font-size: 10px;
+      width: 100%;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.8);
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Northward tooltips */
+    .d3-tip.n:after {
+      content: "\25BC";
+      margin: -1px 0 0 0;
+      top: 100%;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Eastward tooltips */
+    .d3-tip.e:after {
+      content: "\25C0";
+      margin: -4px 0 0 0;
+      top: 50%;
+      left: -8px;
+    }
+
+    /* Southward tooltips */
+    .d3-tip.s:after {
+      content: "\25B2";
+      margin: 0 0 1px 0;
+      top: -8px;
+      left: 0;
+      text-align: center;
+    }
+
+    /* Westward tooltips */
+    .d3-tip.w:after {
+      content: "\25B6";
+      margin: -4px 0 0 -1px;
+      top: 50%;
+      left: 100%;
+    }
+
+    .container {
+      width: 980px;
+    }
+
+    .step-nav {
+      width: 100%;
+    }
+
+    .step-container {
+      position: relative;
+      width: 980px;
+      height: 500px;
+      background-color: #eee;
+      z-index: 40;
+      margin-top: 10px;
+    }
+
+    .step-annotation {
+      position: absolute;
+      display: none;
+    }
+
+    .annotation {
+      position: absolute;
+    }
+
+    #step1-annotation {
+      left: 10px;
+      top: 10px;
+      width: 200px;
+    }
+
+    #step2-annotation {
+      left: 10px;
+      top: 10px;
+      width: 200px;
+    }
+
+    #step3-annotation {
+      left: 10px;
+      top: 10px;
+      width: 200px;
+    }
+
+    .viz-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 60;
+    }
+
+    #map {
+      position: absolute;
+      height: 480px;
+      width: 670px;
+      top: 10px;
+      left: 300px;
+    }
+
+    #step1-chart {
+      position: absolute;
+      height: 300px;
+      width: 670px;
+      top: 10px;
+      left: 300px;
+    }
+
+    .loading {
+      background: rgb(200, 200, 200);
+      font-size: 30px;
+      position: absolute;
+      text-align: center;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Water Quality Conditions on the Malden River</h1>
+
+  <hr>
+
+  <div class="step-nav">
+    <div class="btn-group" role="group" aria-label="Steps">
+      <button type="button" class="btn btn-default btn-step" id="step1">1</a>
+      <button type="button" class="btn btn-default btn-step" id="step2">2</a>
+      <button type="button" class="btn btn-default btn-step" id="step3">3</a>
+    </div>
+  </div>
+
+  <div class="step-container">
+    <div class="step-container">
+      <div class="step-annotation" id="step1-annotation" style="display:block">
+        <h2>Sampling Location</h2>
+        <p>Each month, MyRWA volunteers collect water quality samples on the Malden River as part of the <a href="http://mysticriver.org/baseline/" target="_blank">Baseline Water Quality Monitoring Program</a>.</p>
+        <p>This map shows the location where samples are collected. This location is referred to as sampling station MAR036.</p>
+      </div>
+      <div class="step-annotation" id="step2-annotation">
+        <h2>E. coli Samples</h2>
+        <p>Each sample is analyzed for E. coli, which is known as an indicator bacteria.</p>
+        <p>The chart shows the E. coli levels of each sample over the past 14 years.</p>
+      </div>
+      <div class="step-annotation" id="step3-annotation">
+        <h2>Boating Standard</h2>
+        <p>The horizontal line shows the Massachusetts water quality standard for E. coli, which states that no sample should exceed 1,260 #/100mL in waterways used for boating and other "secondary" recreational uses.</p>
+        <p>Samples above the standard (in red) are called "exceedences" and indicate times when conditions were associated with an elevated risk of illness.</p>
+        <p>Samples below the standard (in blue) indicate times when the risk of illness was low.</p>
+      </div>
+    </div>
+    <div class="viz-container">
+    </div>
+    <div class="loading">
+      Loading...
+    </div>
+  </div>
+
+  <hr>
+  <p>Developed by <a href="http://walkerenvres.com">Walker Environmental Research, LLC</a> for the <a href="http://mysticriver.org">Mystic River Watershed Association</a></p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="https://d3js.org/queue.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
+<script src="http://dc-js.github.io/dc.js/js/dc.js"></script>
+<script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+
+<script>
+dc.constants.EVENT_DELAY = 0;
+
+var state = {
+      step: undefined,
+      charts: {}
+    },
+    steps = {};
+
+steps.step1 = {
+  enter: function () {
+    console.log('step1.enter()');
+    d3.select('.viz-container').append('div').attr('id', 'map');
+    this.map = L.map('map').setView([42.41, -71.072], 14);
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(this.map);
+
+    L.marker([42.4175, -71.073283]).addTo(this.map)
+      .bindPopup('Station: <strong>MAR036</strong><br>Organization: <strong>Mystic River Watershed Association</strong>')
+      .on('mouseover', function (e) {
+        this.openPopup();
+      })
+      .on('mouseout', function (e) {
+        this.closePopup();
+      });
+    // L.marker([42.4053, -71.07191]).addTo(this.map)
+    //   .bindPopup('Station: <strong>MWRA176</strong><br>Organization: <strong>Massachusetts Water Resources Authority</strong>')
+    //   .on('mouseover', function (e) {
+    //     this.openPopup();
+    //   })
+    //   .on('mouseout', function (e) {
+    //     this.closePopup();
+    //   });
+  },
+  exit: function (cb) {
+    console.log('step1.exit()');
+    this.map.remove();
+    d3.select('#map').remove();
+    cb();
+  }
+};
+
+steps.step2 = {
+  enter: function () {
+    console.log('step2.enter()');
+    this.el = d3.select('.viz-container').append('div').attr('id', 'step1-chart');
+    this.chart = setupTimeseries(this.el);
+    this.chart.render();
+  },
+  exit: function (cb) {
+    console.log('step2.exit()');
+    this.el
+      .transition()
+      .delay(0)
+      .duration(400)
+      .style('opacity', 0)
+      .each("end", function (d) {
+        d3.select(this).remove();
+        cb();
+      });
+  }
+};
+
+steps.step3 = {
+  enter: function () {
+    console.log('step3.enter()');
+    this.el = d3.select('.viz-container').append('div').attr('id', 'step1-chart');
+    this.chart = setupTimeseries2(this.el);
+    this.chart.render();
+  },
+  exit: function (cb) {
+    console.log('step3.exit()');
+    this.el
+      .transition()
+      .delay(0)
+      .duration(400)
+      .style('opacity', 0)
+      .each("end", function (d) {
+        d3.select(this).remove();
+        cb();
+      });
+  }
+};
+
+d3.selectAll('.btn-step').on('click', function () {
+  var step = d3.select(this).attr('id');
+  switchStep(step);
+});
+
+function switchStep (step) {
+  d3.selectAll('.btn-step').classed('btn-success', false).classed('btn-default', true);
+  d3.select('#' + step).classed('btn-default', false);
+  d3.select('#' + step).classed('btn-success', true);
+  switchAnnotation(step);
+
+  if (state.step) {
+    steps[state.step].exit(function () {
+      state.step = step;
+      steps[step].enter();
+    });
+  } else {
+    state.step = step;
+    steps[step].enter();
+  }
+}
+
+function switchAnnotation (step) {
+  d3.selectAll('.step-annotation').style('display', 'none');
+  d3.select('#' + step + '-annotation').style('display', 'block');
+}
+
+function initialize () {
+  var isoFormat = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
+
+  d3.csv('data/wq.csv')
+    .row(function (d) {
+      return {
+        site: d.site,
+        param: d.param,
+        datetime: isoFormat.parse(d.datetime),
+        value: +d.value,
+        precip: +d.precip,
+        precip48: +d.precip48,
+      }
+    })
+    .get(function (error, rows) {
+      if (error) {
+        console.log("Error: ", error);
+        return;
+      }
+
+      // keep only ECOLI data collected through 2015 (exclude 2016 data)
+      state.data = rows.filter(function (d) {
+        return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015;
+      });
+
+      state.data.forEach(function (d) {
+        // d.exceed = d.value > state.params.standard;
+        d.exceed = d.value > 1260;
+        d.month = d.datetime.getMonth();
+      });
+
+      state.ndx = crossfilter(state.data);
+      state.all = state.ndx.groupAll();
+
+      state.xf = {};
+
+      state.xf.time = {};
+      state.xf.time.dim = state.ndx.dimension(function (d) {
+        return [d.datetime, d.value, d.site];
+      });
+      state.xf.time.group = state.xf.time.dim.group();
+
+      // remove loading frame
+      d3.select('.loading')
+        .transition()
+        .delay(0)
+        .duration(1000)
+        .style('opacity', 0)
+        .each("end", function (d) {
+          d3.select(this).style('display', 'none');
+        });
+
+      switchStep('step1');
+    });
+}
+
+initialize();
+
+
+
+
+function setupCrossfilter () {
+  // state.ndx = crossfilter(state.data);
+  // state.all = state.ndx.groupAll();
+
+  // state.xf = {};
+
+  // state.xf.time = {};
+  // state.xf.time.dim = state.ndx.dimension(function (d) {
+  //   return [d.datetime, d.value, d.site];
+  // });
+  // state.xf.time.group = state.xf.time.dim.group();
+
+  // state.xf.site = {};
+  // state.xf.site.dim = state.ndx.dimension(function (d) {
+  //   return d.site;
+  // });
+  // state.xf.site.group = state.xf.site.dim.group();
+
+  // state.xf.exceed = {};
+  // state.xf.exceed.dim = state.ndx.dimension(function (d) {
+  //   return d.value < state.params.standard ? "Safe" : "Unsafe";
+  // });
+  // state.xf.exceed.group = state.xf.exceed.dim.group();
+
+  // state.xf.weather = {};
+  // state.xf.weather.dim = state.ndx.dimension(function (d) {
+  //   return d.precip48 >= state.params.precip48 ? "Wet" : "Dry";
+  // });
+  // state.xf.weather.group = state.xf.weather.dim.group();
+
+  // state.xf.month = {};
+  // state.xf.month.dim = state.ndx.dimension(function (d) {
+  //   return months[d.month];
+  // });
+  // state.xf.month.group = state.xf.month.dim.group();
+
+  // state.xf.precip = {};
+  // state.xf.precip.dim = state.ndx.dimension(function (d) {
+  //   return [d.precip48, d.value, d.site, d.datetime];
+  // });
+  // state.xf.precip.group = state.xf.precip.dim.group();
+}
+
+function setupTimeseries (el) {
+  var valueFormat = d3.format(",.0f");
+  var datetimeFormat = d3.time.format("%x %X");
+
+  var timeScale = d3.time.scale()
+    .domain(d3.extent(state.data, function(d) { return d.datetime; }));
+  var ecoliScale = d3.scale.log()
+    .domain([1, d3.max(state.data, function(d) { return d.value; }) * 2]);
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[0]) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong>";
+    });
+
+  var chart = dc.scatterPlot(el)
+    .width(670)
+    .height(300)
+    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .x(timeScale)
+    .y(ecoliScale)
+    .brushOn(false)
+    .yAxisLabel('E. coli (#/100mL)')
+    .xAxisLabel('Date')
+    .clipPadding(10)
+    .dimension(state.xf.time.dim)
+    .excludedOpacity(0.5)
+    .group(state.xf.time.group)
+    .colors(['#000'])
+    .transitionDuration(200)
+    .on('renderlet', function(chart) {
+      chart.select("svg").call(tip);
+
+      chart.selectAll("path.symbol")
+        .on('mouseover', function (d, i) {
+          console.log(d);
+          tip.show(d, i);
+        })
+        .on('mouseout', tip.hide);
+    });
+  var tickValues = [];
+  [0, 1, 2, 3, 4, 5].forEach(function (exp) {
+    [1, 2, 5].forEach(function (i) {
+      tickValues.push(i*Math.pow(10, exp));
+    });
+  });
+  chart.yAxis().tickFormat(function (d) {
+    return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
+  });
+
+  return chart;
+
+}
+
+function setupTimeseries2 (el) {
+  var valueFormat = d3.format(",.0f");
+  var datetimeFormat = d3.time.format("%x %X");
+
+  var timeScale = d3.time.scale()
+    .domain(d3.extent(state.data, function(d) { return d.datetime; }));
+  var ecoliScale = d3.scale.log()
+    .domain([1, d3.max(state.data, function(d) { return d.value; }) * 2]);
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[0]) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong>";
+    });
+
+  var chart = dc.scatterPlot(el)
+    .width(670)
+    .height(300)
+    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .x(timeScale)
+    .y(ecoliScale)
+    .brushOn(false)
+    .yAxisLabel('E. coli (#/100mL)')
+    .xAxisLabel('Date')
+    .clipPadding(10)
+    .dimension(state.xf.time.dim)
+    .excludedOpacity(0.5)
+    .group(state.xf.time.group)
+    .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range(['#ff4500', '#00bfff']))
+    .colorAccessor(function (d) {
+      if (d) {
+        return d.key[1] < 1260 ? "Safe" : "Unsafe";
+      }
+    })
+    .transitionDuration(200)
+    .on('renderlet', function(chart) {
+      chart.select("svg").call(tip);
+
+      chart.selectAll("path.symbol")
+        .on('mouseover', function (d, i) {
+          console.log(d);
+          tip.show(d, i);
+        })
+        .on('mouseout', tip.hide);
+
+      var extra_data = [
+        {
+          x: chart.x().range()[0],
+          y: chart.y()(1260)
+        }, {
+          x: chart.x().range()[1],
+          y: chart.y()(1260)
+        }
+      ];
+      var line = d3.svg.line()
+          .x(function(d) { return d.x; })
+          .y(function(d) { return d.y; })
+          .interpolate('linear');
+      var chartBody = chart.select('g.chart-body');
+      var path = chartBody.selectAll('path.extra').data([extra_data]);
+      path.enter().append('path').attr({
+        class: 'extra',
+        stroke: 'red',
+        id: 'hline',
+        'stroke-dasharray': '5,5'
+      });
+      path.attr('d', line);
+
+      var text = chartBody.selectAll('text.hline-label').data([0]);
+
+      text.enter()
+        .append('text')
+          .attr('text-anchor', 'end')
+          .attr('class', 'hline-label')
+          .attr('dy', '-0.5em');
+      text.text('Boating Standard')
+          .attr('x', chart.x().range()[1])
+          .attr('y', chart.y()(1260));
+    });
+  var tickValues = [];
+  [0, 1, 2, 3, 4, 5].forEach(function (exp) {
+    [1, 2, 5].forEach(function (i) {
+      tickValues.push(i*Math.pow(10, exp));
+    });
+  });
+  console.log(tickValues);
+  chart.yAxis().tickFormat(function (d) {
+    return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
+  });
+
+  return chart;
+
+}
+
+</script>
+</body>
+</html>
