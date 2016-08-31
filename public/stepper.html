@@ -133,9 +133,25 @@
       left: 0;
     }
 
-    #step1-chart {
+    #chart-ts {
       position: absolute;
-      height: 300px;
+      height: 250px;
+      width: 720px;
+      top: 10px;
+      left: 0;
+    }
+
+    #chart-exceed {
+      position: absolute;
+      height: 250px;
+      width: 300px;
+      top: 250px;
+      left: 0;
+    }
+
+    #chart-precip {
+      position: absolute;
+      height: 250px;
       width: 720px;
       top: 10px;
       left: 0;
@@ -167,11 +183,11 @@
       <button type="button" class="btn btn-default btn-step" id="step1">1</a>
       <button type="button" class="btn btn-default btn-step" id="step2">2</a>
       <button type="button" class="btn btn-default btn-step" id="step3">3</a>
-      <button type="button" class="btn btn-default disabled" id="step4">4</a>
-      <button type="button" class="btn btn-default disabled" id="step5">5</a>
-      <button type="button" class="btn btn-default disabled" id="step6">6</a>
-      <button type="button" class="btn btn-default disabled" id="step7">7</a>
-      <button type="button" class="btn btn-default disabled" id="step8">8</a>
+      <button type="button" class="btn btn-default btn-step" id="step4">4</a>
+      <button type="button" class="btn btn-default btn-step" id="step5">5</a>
+      <button type="button" class="btn btn-default btn-step" id="step6">6</a>
+      <button type="button" class="btn btn-default btn-step" id="step7">7</a>
+      <button type="button" class="btn btn-default btn-step" id="step8">8</a>
       <button type="button" class="btn btn-default disabled" id="explore">Explore <i class="fa fa-angle-double-right" area-hidden="true"></i></a>
     </div>
   </div>
@@ -209,6 +225,58 @@
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step2')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step4')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step4-annotation">
+        <h2>Exceedence Frequency</h2>
+        <p>If we count the number of samples above and below the standard, and divide by the total number of samples, then we get the percent of time that the river is safe and unsafe.</p>
+        <p>The donut chart shows the 27% of the samples have E. coli levels exceeding the boating standard.</p>
+        <p>But are some days more likely to have high E. coli levels than others?</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step3')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step5')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step5-annotation">
+        <h2>E. coli vs. Rainfall</h2>
+        <p>The amount of rainfall before a sample is collected is often a good indicator of whether E. coli levels will exceed the standard.</p>
+        <p>Stormwater runoff from urban areas often have high bacteria levels, which result in high levels in the river.</p>
+        <p>This chart shows the relationship between E. coli and the amount of rainfall over the 48 hours before each sample was collected.</p>
+        <p>More rainfall tends to be associated with higher E. coli.</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step4')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step6')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step6-annotation">
+        <h2>Step 6</h2>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step7')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step7-annotation">
+        <h2>Step 7</h2>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step6')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step8')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step8-annotation">
+        <h2>Step 8</h2>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step7')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
             <button type="button" class="btn btn-default disabled">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
           </div>
         </div>
@@ -216,6 +284,8 @@
     </div>
     <div class="chart-container">
       <div id="chart-ts" style="display:none;"></div>
+      <div id="chart-exceed" style="display:none;"></div>
+      <div id="chart-precip" style="display:none;"></div>
     </div>
     <div class="loading">
       <p>Loading...</p>
@@ -288,9 +358,7 @@ steps.step1 = {
 
 steps.step2 = {
   enter: function () {
-    // console.log('step2.enter()');
     if (!state.charts.ts) {
-      // console.log('init: state.charts.ts');
       state.charts.ts = tsChart(d3.select('#chart-ts'));
     }
 
@@ -310,32 +378,17 @@ steps.step2 = {
     d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
   },
   exit: function (done) {
-    // console.log('step2.exit()');
-
     d3.select('#chart-ts')
       .style('opacity', 0)
       .style('display', 'none');
 
     done();
-
-    // d3.select('#chart-ts')
-    //   .transition()
-    //   .delay(0)
-    //   .duration(400)
-    //   .style('opacity', 0)
-    //   .each('end', function (d) {
-    //     d3.select(this).style('display', 'none');
-    //     done();
-    //   });
   }
 };
 
 steps.step3 = {
   enter: function () {
-    console.log('step3.enter()');
-
     if (!state.charts.ts) {
-      // console.log('init: state.charts.ts');
       state.charts.ts = tsChart(d3.select('#chart-ts'));
     }
 
@@ -398,53 +451,91 @@ steps.step3 = {
     d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
   },
   exit: function (done) {
-    // console.log('step3.exit()');
-
     d3.select('#chart-ts')
       .style('opacity', 0)
       .style('display', 'none');
 
     done();
-
-    // d3.select('#chart-ts')
-    //   .transition()
-    //   .delay(0)
-    //   .duration(400)
-    //   .style('opacity', 0)
-    //   .each('end', function (d) {
-    //     d3.select(this).style('display', 'none');
-    //     done();
-    //   });
   }
 };
 
-steps.step3 = {
+steps.step4 = {
   enter: function () {
-    console.log('step3.enter()');
+    steps.step3.enter();
 
-    if (!state.charts.ts) {
-      // console.log('init: state.charts.ts');
-      state.charts.ts = tsChart(d3.select('#chart-ts'));
+    if (!state.charts.exceed) {
+      state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
     }
 
-    state.charts.ts
-      .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range(['#ff4500', '#00bfff']))
-      .colorAccessor(function (d) {
-        if (d) {
-          return d.key[1] < state.standard.value ? 'Safe' : 'Unsafe';
-        }
-      })
+    state.charts.exceed.render();
+
+    d3.select('#chart-exceed').style('display', 'block').style('opacity', 1);
+  },
+  exit: function (done) {
+    d3.select('#chart-ts')
+      .style('opacity', 0)
+      .style('display', 'none');
+
+    d3.select('#chart-exceed')
+      .style('opacity', 0)
+      .style('display', 'none');
+
+    done();
+  }
+};
+
+steps.step5 = {
+  enter: function () {
+    if (!state.charts.precip) {
+      state.charts.precip = precipChart(d3.select('#chart-precip'));
+    }
+
+    state.charts.precip
       .on('renderlet', function(chart) {
-        console.log('step3 chart-ts renderlet');
-        var tip = state.charts.ts.tip();
+        var tip = state.charts.precip.tip();
 
         chart.select("svg").call(tip);
-
         chart.selectAll("path.symbol")
           .on('mouseover', tip.show)
           .on('mouseout', tip.hide);
 
         var extra_data = [
+          {
+            x: chart.x()(state.weather.precip48),
+            y: chart.y().range()[0]
+          }, {
+            x: chart.x()(state.weather.precip48),
+            y: chart.y().range()[1]
+          }
+        ];
+        var line = d3.svg.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .interpolate('linear');
+
+        var chartBody = chart.select('g.chart-body');
+        var path = chartBody.selectAll('path.extra').data([extra_data]);
+        path.enter().append('path').attr({
+          class: 'extra',
+          stroke: 'black',
+          id: 'vline',
+          'stroke-dasharray': '5,5'
+        });
+        path.attr('d', line);
+
+        var text = chartBody.selectAll('text.vline-label').data([0]);
+        text.enter()
+          .append('text')
+            .attr('text-anchor', 'start')
+            .attr('class', 'vline-label')
+            .text('Rainfall Threshold')
+            .attr('dx', '0.5em')
+            .attr('dy', '-0.5em');
+        text.attr('x', chart.x()(state.weather.precip48))
+            .attr('y', chart.y().range()[0]);
+
+        // horizontal line
+        extra_data = [
           {
             x: chart.x().range()[0],
             y: chart.y()(state.standard.value)
@@ -454,16 +545,9 @@ steps.step3 = {
           }
         ];
 
-        var line = d3.svg.line()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; })
-            .interpolate('linear');
-
-        var chartBody = chart.select('g.chart-body');
-
-        var path = chartBody.selectAll('path.extra').data([extra_data]);
+        path = chartBody.selectAll('path.hline').data([extra_data]);
         path.enter().append('path').attr({
-          class: 'extra',
+          class: 'hline',
           stroke: 'red',
           id: 'hline',
           'stroke-dasharray': '5,5'
@@ -477,32 +561,44 @@ steps.step3 = {
             .attr('text-anchor', 'end')
             .attr('class', 'hline-label')
             .attr('dy', '-0.5em');
-        text.text('Boating Standard')
+        text.text(state.standard.label)
             .attr('x', chart.x().range()[1])
             .attr('y', chart.y()(state.standard.value));
       })
       .render();
 
-    d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
+    d3.select('#chart-precip').style('display', 'block').style('opacity', 1);
   },
   exit: function (done) {
-    // console.log('step3.exit()');
-
-    d3.select('#chart-ts')
+    d3.select('#chart-precip')
       .style('opacity', 0)
       .style('display', 'none');
 
     done();
+  }
+};
 
-    // d3.select('#chart-ts')
-    //   .transition()
-    //   .delay(0)
-    //   .duration(400)
-    //   .style('opacity', 0)
-    //   .each('end', function (d) {
-    //     d3.select(this).style('display', 'none');
-    //     done();
-    //   });
+steps.step6 = {
+  enter: function () {
+  },
+  exit: function (done) {
+    done();
+  }
+};
+
+steps.step7 = {
+  enter: function () {
+  },
+  exit: function (done) {
+    done();
+  }
+};
+
+steps.step8 = {
+  enter: function () {
+  },
+  exit: function (done) {
+    done();
   }
 };
 
@@ -574,6 +670,17 @@ function initialize () {
       });
       state.xf.time.group = state.xf.time.dim.group();
 
+      state.xf.exceed = {};
+      state.xf.exceed.dim = state.ndx.dimension(function (d) {
+        return d.value < state.standard.value ? "Safe" : "Unsafe";
+      });
+      state.xf.exceed.group = state.xf.exceed.dim.group();
+
+      state.xf.precip = {};
+      state.xf.precip.dim = state.ndx.dimension(function (d) {
+        return [d.precip48, d.value, d.site, d.datetime];
+      });
+      state.xf.precip.group = state.xf.precip.dim.group();
 
       state.xf.site = {};
       state.xf.site.dim = state.ndx.dimension(function (d) {
@@ -581,6 +688,7 @@ function initialize () {
       });
       state.xf.site.group = state.xf.site.dim.group();
 
+      state.xf.site.dim.filterExact('MAR036');
 
       // remove loading frame
       d3.select('.loading')
@@ -612,13 +720,13 @@ function setupCrossfilter () {
 
   // state.xf.exceed = {};
   // state.xf.exceed.dim = state.ndx.dimension(function (d) {
-  //   return d.value < state.params.standard ? "Safe" : "Unsafe";
+  //   return d.value < state.standard.value ? "Safe" : "Unsafe";
   // });
   // state.xf.exceed.group = state.xf.exceed.dim.group();
 
   // state.xf.weather = {};
   // state.xf.weather.dim = state.ndx.dimension(function (d) {
-  //   return d.precip48 >= state.params.precip48 ? "Wet" : "Dry";
+  //   return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
   // });
   // state.xf.weather.group = state.xf.weather.dim.group();
 
@@ -627,12 +735,6 @@ function setupCrossfilter () {
   //   return months[d.month];
   // });
   // state.xf.month.group = state.xf.month.dim.group();
-
-  // state.xf.precip = {};
-  // state.xf.precip.dim = state.ndx.dimension(function (d) {
-  //   return [d.precip48, d.value, d.site, d.datetime];
-  // });
-  // state.xf.precip.group = state.xf.precip.dim.group();
 }
 
 function tsChart(el) {
@@ -682,6 +784,168 @@ function tsChart(el) {
   chart.yAxis().tickFormat(function (d) {
     return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
   });
+
+  return chart;
+}
+
+function precipChart (el) {
+  var datetimeFormat = d3.time.format("%x %X"),
+      valueFormat = d3.format(",.0f"),
+      precipFormat = d3.format(",.2f");
+
+  var ecoliScale = d3.scale.log()
+    .domain([1, d3.max(state.data, function(d) { return d.value; }) * 2]);
+  var precipScale = d3.scale.linear()
+    .domain([0, d3.max(state.data, function(d) { return d.precip48; })]);
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[3]) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong><br>" +
+             "<span>48-hour Rainfall: </span> <strong>" + precipFormat(d.key[0]) + " inches</strong>";
+    });
+
+  var chart = dc.scatterPlot(el)
+    .width(720)
+    .height(250)
+    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .x(precipScale)
+    .y(ecoliScale)
+    .brushOn(false)
+    .yAxisLabel('E. coli (#/100mL)')
+    .xAxisLabel('48-hour Rainfall (inches)')
+    .clipPadding(10)
+    .excludedOpacity(0.5)
+    .transitionDuration(200)
+    .dimension(state.xf.precip.dim)
+    .group(state.xf.precip.group)
+    .colors(d3.scale.ordinal().range(['#D1E231', '#EA6CDD']))
+    .colorAccessor(function (d) {
+      if (d) {
+        return d.key[0] < state.weather.precip48 ? "Dry" : "Wet";
+      }
+    })
+    // .on('renderlet', function(chart) {
+    //   chart.select("svg").call(tip);
+    //   chart.selectAll("path.symbol")
+    //     .on('mouseover', tip.show)
+    //     .on('mouseout', tip.hide);
+
+    //   var extra_data = [
+    //     {
+    //       x: chart.x()(state.weather.precip48),
+    //       y: chart.y().range()[0]
+    //     }, {
+    //       x: chart.x()(state.weather.precip48),
+    //       y: chart.y().range()[1]
+    //     }
+    //   ];
+    //   var line = d3.svg.line()
+    //       .x(function(d) { return d.x; })
+    //       .y(function(d) { return d.y; })
+    //       .interpolate('linear');
+
+    //   var chartBody = chart.select('g.chart-body');
+    //   var path = chartBody.selectAll('path.extra').data([extra_data]);
+    //   path.enter().append('path').attr({
+    //     class: 'extra',
+    //     stroke: 'black',
+    //     id: 'vline',
+    //     'stroke-dasharray': '5,5'
+    //   });
+    //   path.attr('d', line);
+
+    //   var text = chartBody.selectAll('text.vline-label').data([0]);
+    //   text.enter()
+    //     .append('text')
+    //       .attr('text-anchor', 'start')
+    //       .attr('class', 'vline-label')
+    //       .text('Rainfall Threshold')
+    //       .attr('dx', '0.5em')
+    //       .attr('dy', '-0.5em');
+    //   text.attr('x', chart.x()(state.weather.precip48))
+    //       .attr('y', chart.y().range()[0]);
+
+    //   // horizontal line
+    //   extra_data = [
+    //     {
+    //       x: chart.x().range()[0],
+    //       y: chart.y()(state.standard.value)
+    //     }, {
+    //       x: chart.x().range()[1],
+    //       y: chart.y()(state.standard.value)
+    //     }
+    //   ];
+
+    //   path = chartBody.selectAll('path.hline').data([extra_data]);
+    //   path.enter().append('path').attr({
+    //     class: 'hline',
+    //     stroke: 'red',
+    //     id: 'hline',
+    //     'stroke-dasharray': '5,5'
+    //   });
+    //   path.attr('d', line);
+
+    //   var standardOption = document.getElementById('selectStandard').value;
+    //   var text = chartBody.selectAll('text.hline-label').data([0]);
+
+    //   text.enter()
+    //     .append('text')
+    //       .attr('text-anchor', 'end')
+    //       .attr('class', 'hline-label')
+    //       .attr('dy', '-0.5em');
+    //   text.text((standardOption === 'swim' ? 'Swimming ' : 'Boating ') + 'Standard')
+    //       .attr('x', chart.x().range()[1])
+    //       .attr('y', chart.y()(state.standard.value));
+    // });
+
+  chart.tip = function () {
+    return tip;
+  };
+
+  var tickValues = [];
+  [0, 1, 2, 3, 4, 5].forEach(function (exp) {
+    [1, 2, 5].forEach(function (i) {
+      tickValues.push(i*Math.pow(10, exp));
+    });
+  });
+  chart.yAxis().tickFormat(function (d) {
+    return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
+  });
+
+  return chart;
+}
+
+function exceedChart (el) {
+  var chart = dc.pieChart(el)
+    .width(300)
+    .height(250)
+    .innerRadius(30)
+    .radius(60)
+    .externalLabels(40)
+    .drawPaths(true)
+    .minAngleForLabel(0)
+    .label(function (d) {
+      if (state.charts.exceed.hasFilter() &&
+          !state.charts.exceed.hasFilter(d.key)) {
+          return d.key + ' (0%)';
+      }
+      var label = d.key;
+      if (state.all.value()) {
+          label += ' (' + Math.floor(d.value / state.all.value() * 100) + '%)';
+      }
+      return label;
+    })
+    .dimension(state.xf.exceed.dim)
+    .group(state.xf.exceed.group)
+    .transitionDuration(200)
+    .colors(d3.scale.ordinal().range(['#00bfff', '#ff4500']))
+    .colorAccessor(function (d) {
+      return d.key;
+    });
 
   return chart;
 }
