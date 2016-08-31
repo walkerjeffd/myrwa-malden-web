@@ -104,9 +104,9 @@
     .annotation {
       position: absolute;
       display: none;
-      left: 10px;
+      left: 0;
       top: 10px;
-      width: 200px;
+      width: 210px;
     }
 
     .annotation > h2 {
@@ -167,6 +167,12 @@
       <button type="button" class="btn btn-default btn-step" id="step1">1</a>
       <button type="button" class="btn btn-default btn-step" id="step2">2</a>
       <button type="button" class="btn btn-default btn-step" id="step3">3</a>
+      <button type="button" class="btn btn-default disabled" id="step4">4</a>
+      <button type="button" class="btn btn-default disabled" id="step5">5</a>
+      <button type="button" class="btn btn-default disabled" id="step6">6</a>
+      <button type="button" class="btn btn-default disabled" id="step7">7</a>
+      <button type="button" class="btn btn-default disabled" id="step8">8</a>
+      <button type="button" class="btn btn-default disabled" id="explore">Explore <i class="fa fa-angle-double-right" area-hidden="true"></i></a>
     </div>
   </div>
 
@@ -583,19 +589,19 @@ function setupTimeseries2 (el) {
           .attr('x', chart.x().range()[1])
           .attr('y', chart.y()(1260));
     });
+
+  // specify tick mark values
   var tickValues = [];
   [0, 1, 2, 3, 4, 5].forEach(function (exp) {
     [1, 2, 5].forEach(function (i) {
       tickValues.push(i*Math.pow(10, exp));
     });
   });
-  console.log(tickValues);
   chart.yAxis().tickFormat(function (d) {
     return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
   });
 
   return chart;
-
 }
 
 </script>
