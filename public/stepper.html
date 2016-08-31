@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
   <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
   <style>
     div.dc-chart {
       float: none;
@@ -135,15 +136,13 @@
 
     #chart-ts {
       position: absolute;
-      height: 250px;
-      width: 720px;
+      width: 720px;*/
       top: 10px;
       left: 0;
     }
 
     #chart-exceed {
       position: absolute;
-      height: 250px;
       width: 300px;
       top: 250px;
       left: 0;
@@ -151,10 +150,15 @@
 
     #chart-precip {
       position: absolute;
-      height: 250px;
-      width: 720px;
+      width: 400px;*/
       top: 10px;
       left: 0;
+    }
+
+    #chart-weather {
+      position: absolute;
+      top: 10px;
+      left: 520px;
     }
 
     .loading {
@@ -168,6 +172,18 @@
       z-index: 100;
       width: 100%;
       height: 100%;
+    }
+
+    #slider-weather-container {
+      position: absolute;
+      top: 420px;
+      left: 62px;
+      width: 388px;
+      height: 200px;
+    }
+
+    #slider-weather {
+      width: 388px;
     }
   </style>
 </head>
@@ -286,6 +302,11 @@
       <div id="chart-ts" style="display:none;"></div>
       <div id="chart-exceed" style="display:none;"></div>
       <div id="chart-precip" style="display:none;"></div>
+      <div id="chart-weather" style="display:none;"></div>
+      <div id="slider-weather-container" style="display:none;">
+        <p>Change Rainfall Threshold: <span id="slider-weather-value"></span></p>
+        <div id="slider-weather"></div>
+      </div>
     </div>
     <div class="loading">
       <p>Loading...</p>
@@ -298,6 +319,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="https://d3js.org/queue.v1.min.js"></script>
@@ -308,6 +330,7 @@
 <script>
 dc.constants.EVENT_DELAY = 0;
 
+
 var state = {
     step: undefined,
     standard: {
@@ -315,7 +338,7 @@ var state = {
       value: 1260
     },
     weather: {
-      precip48: 0.5
+      precip48: 0.25
     },
     charts: {}
   },
@@ -486,93 +509,36 @@ steps.step4 = {
 
 steps.step5 = {
   enter: function () {
+    var valueFormat = d3.format('.2f');
+
     if (!state.charts.precip) {
       state.charts.precip = precipChart(d3.select('#chart-precip'));
     }
 
-    state.charts.precip
-      .on('renderlet', function(chart) {
-        var tip = state.charts.precip.tip();
+    state.charts.precip.x().domain([0, 2.5]);
+    state.charts.precip.render();
 
-        chart.select("svg").call(tip);
-        chart.selectAll("path.symbol")
-          .on('mouseover', tip.show)
-          .on('mouseout', tip.hide);
+    d3.select('#slider-weather-container').style('display', 'block');
+    $('#slider-weather').slider({
+      value: state.weather.precip48,
+      min: 0,
+      max: 2,
+      step: 0.05,
+      slide: function (event, ui) {
+        $('#slider-weather-value').text(ui.value + ' inches');
+        state.weather.precip48 = ui.value;
+        state.charts.precip.redraw();
+      }
+    });
+    $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
 
-        var extra_data = [
-          {
-            x: chart.x()(state.weather.precip48),
-            y: chart.y().range()[0]
-          }, {
-            x: chart.x()(state.weather.precip48),
-            y: chart.y().range()[1]
-          }
-        ];
-        var line = d3.svg.line()
-            .x(function(d) { return d.x; })
-            .y(function(d) { return d.y; })
-            .interpolate('linear');
-
-        var chartBody = chart.select('g.chart-body');
-        var path = chartBody.selectAll('path.extra').data([extra_data]);
-        path.enter().append('path').attr({
-          class: 'extra',
-          stroke: 'black',
-          id: 'vline',
-          'stroke-dasharray': '5,5'
-        });
-        path.attr('d', line);
-
-        var text = chartBody.selectAll('text.vline-label').data([0]);
-        text.enter()
-          .append('text')
-            .attr('text-anchor', 'start')
-            .attr('class', 'vline-label')
-            .text('Rainfall Threshold')
-            .attr('dx', '0.5em')
-            .attr('dy', '-0.5em');
-        text.attr('x', chart.x()(state.weather.precip48))
-            .attr('y', chart.y().range()[0]);
-
-        // horizontal line
-        extra_data = [
-          {
-            x: chart.x().range()[0],
-            y: chart.y()(state.standard.value)
-          }, {
-            x: chart.x().range()[1],
-            y: chart.y()(state.standard.value)
-          }
-        ];
-
-        path = chartBody.selectAll('path.hline').data([extra_data]);
-        path.enter().append('path').attr({
-          class: 'hline',
-          stroke: 'red',
-          id: 'hline',
-          'stroke-dasharray': '5,5'
-        });
-        path.attr('d', line);
-
-        var text = chartBody.selectAll('text.hline-label').data([0]);
-
-        text.enter()
-          .append('text')
-            .attr('text-anchor', 'end')
-            .attr('class', 'hline-label')
-            .attr('dy', '-0.5em');
-        text.text(state.standard.label)
-            .attr('x', chart.x().range()[1])
-            .attr('y', chart.y()(state.standard.value));
-      })
-      .render();
-
-    d3.select('#chart-precip').style('display', 'block').style('opacity', 1);
+    d3.select('#chart-precip').style('display', 'block');
   },
   exit: function (done) {
     d3.select('#chart-precip')
-      .style('opacity', 0)
       .style('display', 'none');
+
+    d3.select('#slider-weather-container').style('display', 'none');
 
     done();
   }
@@ -580,8 +546,70 @@ steps.step5 = {
 
 steps.step6 = {
   enter: function () {
+    steps.step5.enter();
+
+    if (!state.charts.weather) {
+      state.charts.weather = weatherChart(d3.select('#chart-weather'));
+    }
+
+    var filters = state.charts.weather.filters();
+
+    // reset dimension
+    state.charts.weather.filter(null);
+    state.xf.weather.dim.dispose();
+    state.xf.weather.dim = state.ndx.dimension(function (d) {
+      return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+    });
+    state.xf.weather.group = state.xf.weather.dim.group();
+
+    state.charts.weather
+      .dimension(state.xf.weather.dim)
+      .group(state.xf.weather.group)
+      .filter([filters])
+      .render();
+
+    d3.select('#slider-weather-container').style('display', 'block');
+    $('#slider-weather').slider({
+      value: state.weather.precip48,
+      min: 0,
+      max: 2,
+      step: 0.05,
+      slide: function (event, ui) {
+        $('#slider-weather-value').text(ui.value + ' inches');
+        state.weather.precip48 = ui.value;
+        state.charts.precip.redraw();
+
+        var filters = state.charts.weather.filters();
+
+        // reset dimension
+        state.charts.weather.filter(null);
+        state.xf.weather.dim.dispose();
+        state.xf.weather.dim = state.ndx.dimension(function (d) {
+          return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+        });
+        state.xf.weather.group = state.xf.weather.dim.group();
+
+        state.charts.weather
+          .dimension(state.xf.weather.dim)
+          .group(state.xf.weather.group)
+          .filter([filters])
+          .redraw();
+      }
+    });
+    $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
+
+    d3.select('#chart-weather').style('display', 'block').style('opacity', 1);
   },
   exit: function (done) {
+    d3.select('#chart-weather')
+      .style('opacity', 0)
+      .style('display', 'none');
+
+    d3.select('#chart-precip')
+      .style('display', 'none');
+
+    d3.select('#slider-weather-container').style('display', 'none');
+
     done();
   }
 };
@@ -682,6 +710,18 @@ function initialize () {
       });
       state.xf.precip.group = state.xf.precip.dim.group();
 
+      state.xf.weather = {};
+      state.xf.weather.dim = state.ndx.dimension(function (d) {
+        return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+      });
+      state.xf.weather.group = state.xf.weather.dim.group();
+
+      // state.xf.month = {};
+      // state.xf.month.dim = state.ndx.dimension(function (d) {
+      //   return months[d.month];
+      // });
+      // state.xf.month.group = state.xf.month.dim.group();
+
       state.xf.site = {};
       state.xf.site.dim = state.ndx.dimension(function (d) {
         return d.site;
@@ -705,37 +745,6 @@ function initialize () {
 }
 
 initialize();
-
-function setupCrossfilter () {
-  // state.ndx = crossfilter(state.data);
-  // state.all = state.ndx.groupAll();
-
-  // state.xf = {};
-
-  // state.xf.time = {};
-  // state.xf.time.dim = state.ndx.dimension(function (d) {
-  //   return [d.datetime, d.value, d.site];
-  // });
-  // state.xf.time.group = state.xf.time.dim.group();
-
-  // state.xf.exceed = {};
-  // state.xf.exceed.dim = state.ndx.dimension(function (d) {
-  //   return d.value < state.standard.value ? "Safe" : "Unsafe";
-  // });
-  // state.xf.exceed.group = state.xf.exceed.dim.group();
-
-  // state.xf.weather = {};
-  // state.xf.weather.dim = state.ndx.dimension(function (d) {
-  //   return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
-  // });
-  // state.xf.weather.group = state.xf.weather.dim.group();
-
-  // state.xf.month = {};
-  // state.xf.month.dim = state.ndx.dimension(function (d) {
-  //   return months[d.month];
-  // });
-  // state.xf.month.group = state.xf.month.dim.group();
-}
 
 function tsChart(el) {
   var valueFormat = d3.format(",.0f");
@@ -809,8 +818,8 @@ function precipChart (el) {
     });
 
   var chart = dc.scatterPlot(el)
-    .width(720)
-    .height(250)
+    .width(500)
+    .height(400)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .x(precipScale)
     .y(ecoliScale)
@@ -828,79 +837,80 @@ function precipChart (el) {
         return d.key[0] < state.weather.precip48 ? "Dry" : "Wet";
       }
     })
-    // .on('renderlet', function(chart) {
-    //   chart.select("svg").call(tip);
-    //   chart.selectAll("path.symbol")
-    //     .on('mouseover', tip.show)
-    //     .on('mouseout', tip.hide);
+    .on('renderlet', function(chart) {
+      var tip = state.charts.precip.tip();
 
-    //   var extra_data = [
-    //     {
-    //       x: chart.x()(state.weather.precip48),
-    //       y: chart.y().range()[0]
-    //     }, {
-    //       x: chart.x()(state.weather.precip48),
-    //       y: chart.y().range()[1]
-    //     }
-    //   ];
-    //   var line = d3.svg.line()
-    //       .x(function(d) { return d.x; })
-    //       .y(function(d) { return d.y; })
-    //       .interpolate('linear');
+      chart.select("svg").call(tip);
+      chart.selectAll("path.symbol")
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
-    //   var chartBody = chart.select('g.chart-body');
-    //   var path = chartBody.selectAll('path.extra').data([extra_data]);
-    //   path.enter().append('path').attr({
-    //     class: 'extra',
-    //     stroke: 'black',
-    //     id: 'vline',
-    //     'stroke-dasharray': '5,5'
-    //   });
-    //   path.attr('d', line);
+      var extra_data = [
+        {
+          x: chart.x()(state.weather.precip48),
+          y: chart.y().range()[0]
+        }, {
+          x: chart.x()(state.weather.precip48),
+          y: chart.y().range()[1]
+        }
+      ];
+      var line = d3.svg.line()
+          .x(function(d) { return d.x; })
+          .y(function(d) { return d.y; })
+          .interpolate('linear');
 
-    //   var text = chartBody.selectAll('text.vline-label').data([0]);
-    //   text.enter()
-    //     .append('text')
-    //       .attr('text-anchor', 'start')
-    //       .attr('class', 'vline-label')
-    //       .text('Rainfall Threshold')
-    //       .attr('dx', '0.5em')
-    //       .attr('dy', '-0.5em');
-    //   text.attr('x', chart.x()(state.weather.precip48))
-    //       .attr('y', chart.y().range()[0]);
+      var chartBody = chart.select('g.chart-body');
+      var path = chartBody.selectAll('path.extra').data([extra_data]);
+      path.enter().append('path').attr({
+        class: 'extra',
+        stroke: 'black',
+        id: 'vline',
+        'stroke-dasharray': '5,5'
+      });
+      path.attr('d', line);
 
-    //   // horizontal line
-    //   extra_data = [
-    //     {
-    //       x: chart.x().range()[0],
-    //       y: chart.y()(state.standard.value)
-    //     }, {
-    //       x: chart.x().range()[1],
-    //       y: chart.y()(state.standard.value)
-    //     }
-    //   ];
+      var text = chartBody.selectAll('text.vline-label').data([0]);
+      text.enter()
+        .append('text')
+          .attr('text-anchor', 'start')
+          .attr('class', 'vline-label')
+          .text('Rainfall Threshold')
+          .attr('dx', '0.5em')
+          .attr('dy', '-0.5em');
+      text.attr('x', chart.x()(state.weather.precip48))
+          .attr('y', chart.y().range()[0]);
 
-    //   path = chartBody.selectAll('path.hline').data([extra_data]);
-    //   path.enter().append('path').attr({
-    //     class: 'hline',
-    //     stroke: 'red',
-    //     id: 'hline',
-    //     'stroke-dasharray': '5,5'
-    //   });
-    //   path.attr('d', line);
+      // horizontal line
+      extra_data = [
+        {
+          x: chart.x().range()[0],
+          y: chart.y()(state.standard.value)
+        }, {
+          x: chart.x().range()[1],
+          y: chart.y()(state.standard.value)
+        }
+      ];
 
-    //   var standardOption = document.getElementById('selectStandard').value;
-    //   var text = chartBody.selectAll('text.hline-label').data([0]);
+      path = chartBody.selectAll('path.hline').data([extra_data]);
+      path.enter().append('path').attr({
+        class: 'hline',
+        stroke: 'red',
+        id: 'hline',
+        'stroke-dasharray': '5,5'
+      });
+      path.attr('d', line);
 
-    //   text.enter()
-    //     .append('text')
-    //       .attr('text-anchor', 'end')
-    //       .attr('class', 'hline-label')
-    //       .attr('dy', '-0.5em');
-    //   text.text((standardOption === 'swim' ? 'Swimming ' : 'Boating ') + 'Standard')
-    //       .attr('x', chart.x().range()[1])
-    //       .attr('y', chart.y()(state.standard.value));
-    // });
+      var text = chartBody.selectAll('text.hline-label').data([0]);
+
+      text.enter()
+        .append('text')
+          .attr('text-anchor', 'end')
+          .attr('class', 'hline-label')
+          .attr('dy', '-0.5em');
+      text.text(state.standard.label)
+          .attr('x', chart.x().range()[1])
+          .attr('y', chart.y()(state.standard.value));
+    });
 
   chart.tip = function () {
     return tip;
@@ -948,6 +958,38 @@ function exceedChart (el) {
     });
 
   return chart;
+}
+
+function weatherChart (el) {
+  var chart = dc.pieChart(el)
+    .width(200)
+    .height(200)
+    .innerRadius(30)
+    .radius(60)
+    .externalLabels(20)
+    .drawPaths(true)
+    .minAngleForLabel(0)
+    .dimension(state.xf.weather.dim)
+    .group(state.xf.weather.group)
+    .transitionDuration(200)
+    .colors(d3.scale.ordinal().range(['#D1E231', '#EA6CDD']))
+    .colorAccessor(function (d) {
+      return d.key;
+    });
+
+  chart.label(function (d) {
+    if (chart.hasFilter() &&
+        !chart.hasFilter(d.key)) {
+        return d.key + ' (0%)';
+    }
+    var label = d.key;
+    if (state.all.value()) {
+        label += ' (' + Math.floor(d.value / state.all.value() * 100) + '%)';
+    }
+    return label;
+  });
+
+  return chart
 }
 </script>
 </body>
