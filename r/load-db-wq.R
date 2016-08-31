@@ -22,9 +22,11 @@ close(ch)
 
 wq_malden <- wq %>%
   filter(ProjectID %in% c("BASE", "CSORWM"),
-         LocationID %in% c("MAR036", "MWRA176")) %>%
+         LocationID %in% c("MAR036", "MWRA176"),
+         SampleTypeID == "S",
+         CharacteristicID == "ECOLI") %>%
   droplevels %>%
-  select(site=LocationID, visit=VisitID, param=CharacteristicID,
+  select(id=ID, site=LocationID, visit=VisitID, param=CharacteristicID,
          datetime=Datetime, value=ResultValue, units=Units) %>%
   mutate(organization = plyr::revalue(site, c("MAR036"="MyRWA",
                                               "MWRA176"="MWRA")))
