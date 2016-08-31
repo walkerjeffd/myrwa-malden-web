@@ -72,7 +72,7 @@
       <div class="annotation" id="step4-annotation">
         <h2>Exceedence Frequency</h2>
         <p>If we count the number of samples above and below the standard, and then divide by the total number of samples, then we can estimate the percent of time that bacteria levels are safe and unsafe.</p>
-        <p>The donut chart shows the 27% of all samples over the past 14 years have E. coli levels exceeding the boating standard.</p>
+        <p>The donut chart shows the 30% of all samples over the past 14 years have E. coli levels exceeding the boating standard.</p>
         <p>Why do some days have higher levels than others? Is there a way to predict whether E. coli levels are safe or unsafe on any given day?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
@@ -85,7 +85,7 @@
         <h2>E. coli vs. Rainfall</h2>
         <p>Rainfall is a good predictor of E. coli levels in urban rivers due to stormwater runoff, which often has high bacteria levels.</p>
         <p>This chart shows the relationship between E. coli and the total rainfall over the previous 48 hours of each sample.</p>
-        <p>A threshold of 0.25 inches of rainfall is used to assign wet and dry weather conditions to each sample. The donut chart shows that 22% of all samples were collected under wet weather conditions.</p>
+        <p>A threshold of 0.25 inches of rainfall is used to assign wet and dry weather conditions to each sample. The donut chart shows that 23% of all samples were collected under wet weather conditions.</p>
         <p>Do the wet weather samples tend to have higher E. coli levels and more exceedences than the dry weather samples?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
@@ -95,12 +95,17 @@
         </div>
       </div>
       <div class="annotation" id="step6-annotation">
-        <h2>Step 6</h2>
-        <p><button class="btn btn-primary" onclick="selectWet()">Wet</button></p>
-        <div class="text-center" style="margin-top:20px">
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
-            <button type="button" class="btn btn-default" onclick="switchStep('step7')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+        <h2>Wet Weather Exceedences</h2>
+        <p>Based on the relationship between E. coli and 48-hour rainfall, it appears that a greater fraction of wet weather samples exceeded the boating standard than for dry weather samples.</p>
+        <p>Click this button to select only the wet weather samples, which will remove the dry weather samples from the other charts.</p>
+        <p><button class="btn btn-primary btn-block" onclick="selectWet()">Select Wet Weather Samples</button></p>
+        <div id="step6-additional-annotation">
+          <p>The donut chart in the lower right now shows that 70% of <em>wet weather</em> samples were above the boating standard, and only 30% were below.</p>
+          <div class="text-center" style="margin-top:20px">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+              <button type="button" class="btn btn-default" onclick="switchStep('step7')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+            </div>
           </div>
         </div>
       </div>
@@ -153,8 +158,7 @@
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-<!-- <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
-<script src="https://d3js.org/d3.v3.js" charset="utf-8"></script>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="https://d3js.org/queue.v1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>

@@ -226,6 +226,7 @@ state.steps.step5 = {
 
 state.steps.step6 = {
   enter: function () {
+    d3.select('#step6-additional-annotation').style('display', 'none');
     state.steps.step5.enter();
 
     if (!state.charts.exceed) {
@@ -305,11 +306,12 @@ d3.selectAll('.btn-step').on('click', function () {
   switchStep(step);
 });
 
-// function selectWet() {
-//   state.charts.weather.filterAll();
-//   state.charts.weather.filter('Wet');
-//   dc.redrawAll();
-// }
+function selectWet() {
+  state.charts.weather.filterAll();
+  state.charts.weather.filter('Wet');
+  dc.redrawAll();
+  d3.select('#step6-additional-annotation').style('display', 'block');
+}
 
 function switchStep (step) {
   d3.selectAll('.btn-step').classed('btn-primary', false).classed('btn-default', true);
@@ -649,7 +651,7 @@ function exceedChart (el) {
       }
       var label = d.key;
       if (state.all.value()) {
-          label += ' (' + Math.floor(d.value / state.all.value() * 100) + '%)';
+          label += ' (' + Math.round(d.value / state.all.value() * 100) + '%)';
       }
       return label;
     })
@@ -689,7 +691,7 @@ function weatherChart (el) {
     }
     var label = d.key;
     if (state.all.value()) {
-        label += ' (' + Math.floor(d.value / state.all.value() * 100) + '%)';
+        label += ' (' + Math.round(d.value / state.all.value() * 100) + '%)';
     }
     return label;
   });
