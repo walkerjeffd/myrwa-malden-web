@@ -5,647 +5,170 @@
   <title>Malden River Water Quality</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
-  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
-
-  <style>
-    div.dc-chart {
-      float: none;
-    }
-
-    svg {
-      font: 12px sans-serif;
-    }
-
-    .chart-title {
-      font: 14px sans-serif;
-    }
-
-    #map { height: 400px; }
-
-    .d3-tip {
-      line-height: 1;
-      font-weight: bold;
-      padding: 12px;
-      background: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      border-radius: 2px;
-      pointer-events: none;
-      font: 14px sans-serif;
-    }
-
-    /* Creates a small triangle extender for the tooltip */
-    .d3-tip:after {
-      box-sizing: border-box;
-      display: inline;
-      font-size: 10px;
-      width: 100%;
-      line-height: 1;
-      color: rgba(0, 0, 0, 0.8);
-      position: absolute;
-      pointer-events: none;
-    }
-
-    /* Northward tooltips */
-    .d3-tip.n:after {
-      content: "\25BC";
-      margin: -1px 0 0 0;
-      top: 100%;
-      left: 0;
-      text-align: center;
-    }
-
-    /* Eastward tooltips */
-    .d3-tip.e:after {
-      content: "\25C0";
-      margin: -4px 0 0 0;
-      top: 50%;
-      left: -8px;
-    }
-
-    /* Southward tooltips */
-    .d3-tip.s:after {
-      content: "\25B2";
-      margin: 0 0 1px 0;
-      top: -8px;
-      left: 0;
-      text-align: center;
-    }
-
-    /* Westward tooltips */
-    .d3-tip.w:after {
-      content: "\25B6";
-      margin: -4px 0 0 -1px;
-      top: 50%;
-      left: 100%;
-    }
-  </style>
+  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
 <div class="container">
   <h1>Water Quality Conditions on the Malden River</h1>
 
   <hr>
 
-  <form class="form-inline">
-    <div class="form-group">
-      <div class="col-xs-8" style="width:400px">
-        <label for="selectStandard">WQ Standard:</label>
-        <select name="selectStandard" id="selectStandard" onchange="updateStandard(this.value)">
-          <option value="swim">Swimming: 235 #/100mL</option>
-          <option value="boat">Boating: 1,260 #/100mL</option>
-        </select>
+  <div class="step-nav">
+    <div class="btn-group" role="group" aria-label="Steps">
+      <button type="button" class="btn btn-default btn-step" id="step1">1</a>
+      <button type="button" class="btn btn-default btn-step" id="step2">2</a>
+      <button type="button" class="btn btn-default btn-step" id="step3">3</a>
+      <button type="button" class="btn btn-default btn-step" id="step4">4</a>
+      <button type="button" class="btn btn-default btn-step" id="step5">5</a>
+      <button type="button" class="btn btn-default btn-step" id="step6">6</a>
+      <button type="button" class="btn btn-default btn-step" id="step7">7</a>
+      <button type="button" class="btn btn-default btn-step" id="step8">8</a>
+      <button type="button" class="btn btn-default disabled" id="explore">Explore <i class="fa fa-angle-double-right" area-hidden="true"></i></a>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="annotation-container">
+      <div class="annotation" id="step1-annotation" style="display:block">
+        <h2>Sampling Location</h2>
+        <p>Each month, MyRWA volunteers collect water quality samples throughout the Mystic River watershed as part of the <a href="http://mysticriver.org/baseline/" target="_blank">Baseline Water Quality Monitoring Program</a>.</p>
+        <p>This map shows the monitoring station where samples are collected on the Malden River (Station ID: MAR036).</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default disabled"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step2')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step2-annotation">
+        <h2>E. coli Samples</h2>
+        <p>Each water quality sample is analyzed for E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria" target="_blank">indicator bacteria</a>.</p>
+        <p>Indicator bacteria are not necessarily harmful, but are used as indicators of public health risks. Their presence suggests that other, more harmful bacteria or viruses may also be present.</p>
+        <p>The chart shows the E. coli levels of each sample collected on the Malden River over the past 14 years.</p>
+        <p>But what do these levels mean? How often is the river safe for boating or other recreation?</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step1')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step3')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step3-annotation">
+        <h2>Boating Standard</h2>
+        <p>Massachusetts has a water quality standard for E. coli that states no sample should exceed 1,260 #/100mL (red line) in waterways used for boating and other "secondary" recreational uses.</p>
+        <p>Samples above the standard (in red) are called exceedences and indicate an unacceptably high level of public health risk.</p>
+        <p>Samples below the standard (in blue) indicate a low public health risk when the river would be safe for boating.</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step2')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step4')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step4-annotation">
+        <h2>Exceedence Frequency</h2>
+        <p>If we count the number of samples above and below the standard, and then divide by the total number of samples, then we can estimate the percent of time that bacteria levels are safe and unsafe.</p>
+        <p>The donut chart shows the 27% of all samples over the past 14 years have E. coli levels exceeding the boating standard.</p>
+        <p>Why do some days have higher levels than others? Is there a way to predict whether E. coli levels are safe or unsafe on any given day?</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step3')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step5')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step5-annotation">
+        <h2>E. coli vs. Rainfall</h2>
+        <p>Rainfall is a good predictor of E. coli levels in urban rivers due to stormwater runoff, which often has high bacteria levels.</p>
+        <p>This chart shows the relationship between E. coli and the total rainfall over the previous 48 hours of each sample.</p>
+        <p>A threshold of 0.25 inches of rainfall is used to assign wet and dry weather conditions to each sample. The donut chart shows that 22% of all samples were collected under wet weather conditions.</p>
+        <p>Do the wet weather samples tend to have higher E. coli levels and more exceedences than the dry weather samples?</p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step4')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step6')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step6-annotation">
+        <h2>Step 6</h2>
+        <p><button class="btn btn-primary" onclick="selectWet()">Wet</button></p>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step7')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step7-annotation">
+        <h2>Step 7</h2>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step6')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default" onclick="switchStep('step8')">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="annotation" id="step8-annotation">
+        <h2>Step 8</h2>
+        <div class="text-center" style="margin-top:20px">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" onclick="switchStep('step7')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
+            <button type="button" class="btn btn-default disabled">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="form-group">
-      <div class="col-xs-12" style="width:400px">
-        <label for="slidePrecipThreshold">48-hour Rainfall Threshold: </label> <span id="sliderValue">0.25</span> inches
-        <input type="range" id="slidePrecipThreshold" value="0.25" min="0.0" max="2.0" step="0.05" onchange="updatePrecipThreshold(this.value)" oninput="updatePrecipThreshold(this.value)">
+    <div class="chart-container">
+      <div id="chart-ts" style="display:none;">
+        <strong>E. coli Samples over Time</strong>
+      </div>
+      <div id="chart-exceed" style="display:none;">
+        <strong>% of Samples Above/Below Standard</strong>
+      </div>
+      <div id="chart-precip" style="display:none;">
+        <strong>E. coli Samples vs. Previous 48-hour Rainfall</strong>
+      </div>
+      <div id="chart-weather" style="display:none;">
+        <strong>% of Samples with Dry/Wet Weather</strong>
+      </div>
+      <div id="slider-weather-container" style="display:none;">
+        <div id="slider-weather"></div>
+        <p>Rainfall Threshold: <span id="slider-weather-value"></span></p>
       </div>
     </div>
-  </form>
+    <div class="loading">
+      <p>Loading...</p>
+      <p><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></p>
+    </div>
+  </div>
 
   <hr>
-
-  <div class="row">
-    <div class="col-xs-8">
-      <div id="chart-time">
-        <span class="chart-title">Timeseries</span>
-        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-    <div class="col-xs-4">
-      <div id="chart-exceed">
-        <span class="chart-title">% Exceedence</span>
-        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-xs-8">
-      <div id="chart-precip">
-        <span class="chart-title">48-hour Rainfall</span>
-        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-    <div class="col-xs-4">
-      <div id="chart-weather">
-        <span class="chart-title">Weather Condition</span>
-        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-xs-4">
-      <div id="chart-month">
-        <span class="chart-title">Sample Month</span>
-        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-    <div class="col-xs-2">
-      <div id="chart-site">
-        <span class="chart-title">Sample Station</span>
-        <!-- <span class="reset" style="display: none;"> <span class="filter"></span></span> -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-    <div class="col-xs-6">
-      <div id="map"></div>
-    </div>
-  </div>
-
-  <hr>
-
-  <div>
-    <p>Developed by <a href="http://walkerenvres.com">Walker Environmental Research, LLC</a> for the <a href="http://mysticriver.org">Mystic River Watershed Association</a></p>
-
-  </div>
+  <p>Developed by <a href="http://walkerenvres.com">Walker Environmental Research, LLC</a> for the <a href="http://mysticriver.org">Mystic River Watershed Association</a></p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+<!-- <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+<script src="https://d3js.org/d3.v3.js" charset="utf-8"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="https://d3js.org/queue.v1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
 <script src="http://dc-js.github.io/dc.js/js/dc.js"></script>
 <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
 
+<script src="app.js"></script>
+
 <script>
-var ndx;
-var url_wq = 'data/wq.csv';
-var isoFormat = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
-var datetimeFormat = d3.time.format("%x %X");
-var valueFormat = d3.format(",.0f");
-var precipFormat = d3.format(",.2f");
-var monthFormat = d3.time.format("%b");
 
-var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-var state = {
-  params: {
-    standard: 235,
-    precip48: 0.25
-  },
-  xf: {},
-  charts: {}
-};
-
-var map = L.map('map').setView([42.41, -71.072], 13);
-
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-
-L.marker([42.4175, -71.073283]).addTo(map)
-  .bindPopup('Station: <strong>MAR036</strong><br>Organization: <strong>Mystic River Watershed Association</strong>')
-  .on('click', function (e) {
-    state.charts.site.filter([['MAR036']]);
-  })
-  .on('mouseover', function (e) {
-    this.openPopup();
-  })
-  .on('mouseout', function (e) {
-    this.closePopup();
-  });
-L.marker([42.4053, -71.07191]).addTo(map)
-  .bindPopup('Station: <strong>MWRA176</strong><br>Organization: <strong>Massachusetts Water Resources Authority</strong>')
-  .on('click', function () {
-    if (state.charts.site.hasFilter() &&
-        !state.charts.site.hasFilter(d.key)) {
-      return d.key + ' (0%)';
-    }
-    state.charts.site.filter([['MWRA176']])
-  })
-  .on('mouseover', function (e) {
-    this.openPopup();
-  })
-  .on('mouseout', function (e) {
-    this.closePopup();
-  });
-
-d3.csv(url_wq)
-  .row(function (d) {
-    return {
-      site: d.site,
-      param: d.param,
-      datetime: isoFormat.parse(d.datetime),
-      value: +d.value,
-      precip: +d.precip,
-      precip48: +d.precip48,
-    }
-  })
-  .get(function (error, rows) {
-    if (error) {
-      console.log("Error: ", error);
-      return;
-    }
-
-    state.data = rows.filter(function (d) {
-      return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015;
-    });
-
-    setup(state);
-  });
-
-function setup (state) {
-  dc.constants.EVENT_DELAY = 0;
-
-  state.data.forEach(function (d) {
-    d.exceed = d.value > state.params.standard;
-    d.month = d.datetime.getMonth();
-  });
-
-  state.ndx = crossfilter(state.data);
-  state.all = state.ndx.groupAll();
-
-  state.xf.time = {};
-  state.xf.time.dim = state.ndx.dimension(function (d) {
-    return [d.datetime, d.value, d.site];
-  });
-  state.xf.time.group = state.xf.time.dim.group();
-
-  state.xf.site = {};
-  state.xf.site.dim = state.ndx.dimension(function (d) {
-    return d.site;
-  });
-  state.xf.site.group = state.xf.site.dim.group();
-
-  state.xf.exceed = {};
-  state.xf.exceed.dim = state.ndx.dimension(function (d) {
-    return d.value < state.params.standard ? "Safe" : "Unsafe";
-  });
-  state.xf.exceed.group = state.xf.exceed.dim.group();
-
-  state.xf.weather = {};
-  state.xf.weather.dim = state.ndx.dimension(function (d) {
-    return d.precip48 >= state.params.precip48 ? "Wet" : "Dry";
-  });
-  state.xf.weather.group = state.xf.weather.dim.group();
-
-  state.xf.month = {};
-  state.xf.month.dim = state.ndx.dimension(function (d) {
-    return months[d.month];
-  });
-  state.xf.month.group = state.xf.month.dim.group();
-
-  state.xf.precip = {};
-  state.xf.precip.dim = state.ndx.dimension(function (d) {
-    return [d.precip48, d.value, d.site, d.datetime];
-  });
-  state.xf.precip.group = state.xf.precip.dim.group();
-
-  var timeScale = d3.time.scale()
-    .domain(d3.extent(state.data, function(d) { return d.datetime; }));
-  var ecoliScale = d3.scale.log()
-    .domain([1, d3.max(state.data, function(d) { return d.value; }) * 2]);
-  var precipScale = d3.scale.linear()
-    .domain([0, d3.max(state.data, function(d) { return d.precip48; })]);
-
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
-             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[0]) + "</strong><br>" +
-             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong>";
-    });
-
-  var tipPrecip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
-             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[3]) + "</strong><br>" +
-             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong><br>" +
-             "<span>48-hour Rainfall: </span> <strong>" + precipFormat(d.key[0]) + " inches</strong>";
-    });
-
-  state.charts.time = dc.scatterPlot('#chart-time')
-    .width(800)
-    .height(250)
-    .margins({top: 10, right: 50, bottom: 30, left: 50})
-    .x(timeScale)
-    .y(ecoliScale)
-    .brushOn(false)
-    .yAxisLabel('E. coli (#/100mL)')
-    .xAxisLabel('Date')
-    .clipPadding(10)
-    .dimension(state.xf.time.dim)
-    .excludedOpacity(0.5)
-    .group(state.xf.time.group)
-    .colors(d3.scale.ordinal().range(['#ff4500', '#00bfff']))
-    .colorAccessor(function (d) {
-      if (d) {
-        return d.key[1] < state.params.standard ? "Safe" : "Unsafe";
-      }
-    })
-    // .legend(dc.legend().x(400).y(10).itemHeight(13).gap(5))
-    .transitionDuration(200)
-    .on('renderlet', function(chart) {
-      chart.select("svg").call(tip);
-      chart.selectAll("path.symbol")
-        .on('mouseover', tip.show)
-        .on('mouseout', tip.hide);
-
-      var extra_data = [
-        {
-          x: chart.x().range()[0],
-          y: chart.y()(state.params.standard)
-        }, {
-          x: chart.x().range()[1],
-          y: chart.y()(state.params.standard)
-        }
-      ];
-      var line = d3.svg.line()
-          .x(function(d) { return d.x; })
-          .y(function(d) { return d.y; })
-          .interpolate('linear');
-      var chartBody = chart.select('g.chart-body');
-      var path = chartBody.selectAll('path.extra').data([extra_data]);
-      path.enter().append('path').attr({
-        class: 'extra',
-        stroke: 'red',
-        id: 'hline',
-        'stroke-dasharray': '5,5'
-      });
-      path.attr('d', line);
-
-      var standardOption = document.getElementById('selectStandard').value;
-      var text = chartBody.selectAll('text.hline-label').data([0]);
-
-      text.enter()
-        .append('text')
-          .attr('text-anchor', 'end')
-          .attr('class', 'hline-label')
-          .attr('dy', '-0.5em');
-      text.text((standardOption === 'swim' ? 'Swimming ' : 'Boating ') + 'Standard')
-          .attr('x', chart.x().range()[1])
-          .attr('y', chart.y()(state.params.standard));
-    });
-  var tickValues = [];
-  [0, 1, 2, 3, 4, 5].forEach(function (exp) {
-    [1, 2, 5].forEach(function (i) {
-      tickValues.push(i*Math.pow(10, exp));
-    });
-  });
-  state.charts.time.yAxis().tickFormat(function (d) {
-    return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
-  });
-
-  state.charts.exceed = dc.pieChart('#chart-exceed');
-  state.charts.exceed
-    .width(300)
-    .height(250)
-    .innerRadius(30)
-    .radius(60)
-    .externalLabels(40)
-    .drawPaths(true)
-    .minAngleForLabel(0)
-    .label(function (d) {
-      if (state.charts.exceed.hasFilter() &&
-          !state.charts.exceed.hasFilter(d.key)) {
-          return d.key + ' (0%)';
-      }
-      var label = d.key;
-      if (state.all.value()) {
-          label += ' (' + Math.floor(d.value / state.all.value() * 100) + '%)';
-      }
-      return label;
-    })
-    .dimension(state.xf.exceed.dim)
-    .group(state.xf.exceed.group)
-    .transitionDuration(200)
-    .colors(d3.scale.ordinal().range(['#00bfff', '#ff4500']))
-    .colorAccessor(function (d) {
-      return d.key;
-    });
-
-  state.charts.weather = dc.pieChart('#chart-weather');
-  state.charts.weather.width(300)
-    .height(250)
-    .innerRadius(30)
-    .radius(60)
-    .externalLabels(20)
-    .drawPaths(true)
-    .minAngleForLabel(0)
-    .label(function (d) {
-      if (state.charts.weather.hasFilter() &&
-          !state.charts.weather.hasFilter(d.key)) {
-          return d.key + ' (0%)';
-      }
-      var label = d.key;
-      if (state.all.value()) {
-          label += ' (' + Math.floor(d.value / state.all.value() * 100) + '%)';
-      }
-      return label;
-    })
-    .dimension(state.xf.weather.dim)
-    .group(state.xf.weather.group)
-    .transitionDuration(200)
-    .colors(d3.scale.ordinal().range(['#D1E231', '#ea6cdd']))
-    .colorAccessor(function (d) {
-      return d.key;
-    });
-
-  state.charts.month = dc.barChart('#chart-month');
-  state.charts.month
-    .width(400)
-    .height(200)
-    .x(d3.scale.ordinal().domain(months))
-    .yAxisLabel("# of Samples")
-    .xUnits(dc.units.ordinal)
-    .dimension(state.xf.month.dim)
-    .group(state.xf.month.group);
-
-  state.charts.site = dc.barChart('#chart-site');
-  state.charts.site
-    .width(200)
-    .height(200)
-    .x(d3.scale.ordinal())
-    .yAxisLabel("# of Samples")
-    .xUnits(dc.units.ordinal)
-    .dimension(state.xf.site.dim)
-    .group(state.xf.site.group);
-
-
-  state.charts.precip = dc.scatterPlot('#chart-precip');
-  state.charts.precip
-    .width(800)
-    .height(250)
-    .margins({top: 10, right: 50, bottom: 30, left: 50})
-    .x(precipScale)
-    .y(ecoliScale)
-    .brushOn(false)
-    .yAxisLabel('E. coli (#/100mL)')
-    .xAxisLabel('48-hour Rainfall (inches)')
-    .clipPadding(10)
-    .dimension(state.xf.precip.dim)
-    .excludedOpacity(0.5)
-    .group(state.xf.precip.group)
-    .colors(d3.scale.ordinal().range(['#D1E231', '#ea6cdd']))
-    .colorAccessor(function (d) {
-      if (d) {
-        return d.key[0] < state.params.precip48 ? "Dry" : "Wet";
-      }
-    })
-    .transitionDuration(200)
-    .on('renderlet', function(chart) {
-      chart.select("svg").call(tipPrecip);
-      chart.selectAll("path.symbol")
-        .on('mouseover', tipPrecip.show)
-        .on('mouseout', tipPrecip.hide);
-
-      var extra_data = [
-        {
-          x: chart.x()(state.params.precip48),
-          y: chart.y().range()[0]
-        }, {
-          x: chart.x()(state.params.precip48),
-          y: chart.y().range()[1]
-        }
-      ];
-      var line = d3.svg.line()
-          .x(function(d) { return d.x; })
-          .y(function(d) { return d.y; })
-          .interpolate('linear');
-
-      var chartBody = chart.select('g.chart-body');
-      var path = chartBody.selectAll('path.extra').data([extra_data]);
-      path.enter().append('path').attr({
-        class: 'extra',
-        stroke: 'black',
-        id: 'vline',
-        'stroke-dasharray': '5,5'
-      });
-      path.attr('d', line);
-
-      var text = chartBody.selectAll('text.vline-label').data([0]);
-      text.enter()
-        .append('text')
-          .attr('text-anchor', 'start')
-          .attr('class', 'vline-label')
-          .text('Rainfall Threshold')
-          .attr('dx', '0.5em')
-          .attr('dy', '-0.5em');
-      text.attr('x', chart.x()(state.params.precip48))
-          .attr('y', chart.y().range()[0]);
-
-      // horizontal line
-      extra_data = [
-        {
-          x: chart.x().range()[0],
-          y: chart.y()(state.params.standard)
-        }, {
-          x: chart.x().range()[1],
-          y: chart.y()(state.params.standard)
-        }
-      ];
-
-      path = chartBody.selectAll('path.hline').data([extra_data]);
-      path.enter().append('path').attr({
-        class: 'hline',
-        stroke: 'red',
-        id: 'hline',
-        'stroke-dasharray': '5,5'
-      });
-      path.attr('d', line);
-
-      var standardOption = document.getElementById('selectStandard').value;
-      var text = chartBody.selectAll('text.hline-label').data([0]);
-
-      text.enter()
-        .append('text')
-          .attr('text-anchor', 'end')
-          .attr('class', 'hline-label')
-          .attr('dy', '-0.5em');
-      text.text((standardOption === 'swim' ? 'Swimming ' : 'Boating ') + 'Standard')
-          .attr('x', chart.x().range()[1])
-          .attr('y', chart.y()(state.params.standard));
-    });
-  state.charts.precip.yAxis().tickFormat(function (d) {
-    return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
-  });
-
-
-  dc.renderAll();
-}
-
-function update (state) {
-  state.data.forEach(function (d) {
-    d.exceed = d.value > state.params.standard;
-  });
-  state.ndx.remove();
-  state.ndx.add(state.data);
-  dc.renderAll();
-}
-
-//## change slider score value to re-assign the data in pie chart
-function updatePrecipThreshold(slideValue) {
-  var sliderDiv = document.getElementById("sliderValue");
-  sliderDiv.innerHTML = slideValue;
-
-  // get new precipitation threshold
-  var limit = document.getElementById('slidePrecipThreshold').value;
-  limit = parseFloat(limit);
-  if (isNaN(limit)) {
-    limit = 0.25; // default
-  }
-  state.params.precip48 = limit;
-
-  // store current filters (if any)
-  var filters = state.charts.weather.filters();
-
-  // reset dimension
-  state.charts.weather.filter(null);
-  state.xf.weather.dim.dispose();
-  state.xf.weather.dim = state.ndx.dimension(function (d) {
-    return d.precip48 >= state.params.precip48 ? "Wet" : "Dry";
-  });
-  state.xf.weather.group = state.xf.weather.dim.group();
-
-  state.charts.weather
-      .dimension(state.xf.weather.dim)
-      .group(state.xf.weather.group)
-      .filter([filters]);
-
-  dc.redrawAll();
-}
-
-function updateStandard(selectValue) {
-  // update selected wq standard
-  var limits = {
-    swim: 235,
-    boat: 1260
-  };
-  state.params.standard = limits[selectValue];
-
-  // store current filters (if any)
-  var filters = state.charts.exceed.filters();
-
-  // reset dimension
-  state.charts.exceed.filter(null);
-  state.xf.exceed.dim.dispose();
-  state.xf.exceed.dim = state.ndx.dimension(function (d) {
-    return d.value < state.params.standard ? "Safe" : "Unsafe";
-  });
-  state.xf.exceed.group = state.xf.exceed.dim.group();
-
-  state.charts.exceed
-    .dimension(state.xf.exceed.dim)
-    .group(state.xf.exceed.group)
-    .filter([filters]);
-
-  dc.redrawAll();
-}
+$(document).ready(function () {
+  initialize();
+});
 
 </script>
-
 </body>
 </html>
