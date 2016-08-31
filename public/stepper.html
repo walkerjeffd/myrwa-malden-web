@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Stepper Example</title>
+  <title>Malden River Water Quality</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://dc-js.github.io/dc.js/css/dc.css">
   <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css">
@@ -108,6 +108,7 @@
       left: 0;
       top: 10px;
       width: 210px;
+      font-size: 12px;
     }
 
     .annotation > h2 {
@@ -124,6 +125,19 @@
       top: 20px;
       left: 240px;
       z-index: 60;
+    }
+
+    .loading {
+      background: #eee;
+      font-size: 36px;
+      position: absolute;
+      text-align: center;
+      padding-top: 160px;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      width: 100%;
+      height: 100%;
     }
 
     #map {
@@ -144,46 +158,31 @@
     #chart-exceed {
       position: absolute;
       width: 300px;
-      top: 250px;
+      top: 270px;
       left: 0;
     }
 
     #chart-precip {
       position: absolute;
-      width: 400px;*/
-      top: 10px;
-      left: 0;
+      width: 400px;
     }
 
     #chart-weather {
       position: absolute;
-      top: 10px;
       left: 520px;
-    }
-
-    .loading {
-      background: #eee;
-      font-size: 36px;
-      position: absolute;
-      text-align: center;
-      padding-top: 160px;
-      top: 0;
-      left: 0;
-      z-index: 100;
-      width: 100%;
-      height: 100%;
     }
 
     #slider-weather-container {
       position: absolute;
       top: 420px;
-      left: 62px;
-      width: 388px;
-      height: 200px;
+      left: 77px;
+      width: 300px;
+      height: 50px;
     }
 
     #slider-weather {
-      width: 388px;
+      width: 298px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -223,9 +222,10 @@
       </div>
       <div class="annotation" id="step2-annotation">
         <h2>E. coli Samples</h2>
-        <p>Each sample is analyzed for E. coli, which is known as an indicator bacteria.</p>
-        <p>The chart shows the E. coli levels of each sample over the past 14 years.</p>
-        <p>But which samples are too high? How often is the river safe for boating?</p>
+        <p>Each water quality sample is analyzed for E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria" target="_blank">indicator bacteria</a>.</p>
+        <p>Indicator bacteria are not necessarily harmful, but are used as indicators of public health risks. Their presence suggests that other, more harmful bacteria or viruses may also be present.</p>
+        <p>The chart shows the E. coli levels of each sample collected on the Malden River over the past 14 years.</p>
+        <p>But what do these levels mean? How often is the river safe for boating or other recreation?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step1')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
@@ -235,9 +235,9 @@
       </div>
       <div class="annotation" id="step3-annotation">
         <h2>Boating Standard</h2>
-        <p>The horizontal line shows the Massachusetts water quality standard for E. coli, which states that no sample should exceed 1,260 #/100mL in waterways used for boating and other "secondary" recreational uses.</p>
-        <p>Samples above the standard (in red) are called "exceedences" and indicate times when conditions were associated with an elevated risk of illness.</p>
-        <p>Samples below the standard (in blue) indicate times when the risk of illness was low.</p>
+        <p>Massachusetts has a water quality standard for E. coli that states no sample should exceed 1,260 #/100mL (red line) in waterways used for boating and other "secondary" recreational uses.</p>
+        <p>Samples above the standard (in red) are called exceedences and indicate an unacceptably high level of public health risk.</p>
+        <p>Samples below the standard (in blue) indicate a low public health risk when the river would be safe for boating.</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step2')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
@@ -247,9 +247,9 @@
       </div>
       <div class="annotation" id="step4-annotation">
         <h2>Exceedence Frequency</h2>
-        <p>If we count the number of samples above and below the standard, and divide by the total number of samples, then we get the percent of time that the river is safe and unsafe.</p>
-        <p>The donut chart shows the 27% of the samples have E. coli levels exceeding the boating standard.</p>
-        <p>But are some days more likely to have high E. coli levels than others?</p>
+        <p>If we count the number of samples above and below the standard, and then divide by the total number of samples, then we can estimate the percent of time that bacteria levels are safe and unsafe.</p>
+        <p>The donut chart shows the 27% of all samples over the past 14 years have E. coli levels exceeding the boating standard.</p>
+        <p>Why do some days have higher levels than others? Is there a way to predict whether E. coli levels are safe or unsafe on any given day?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step3')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
@@ -259,10 +259,10 @@
       </div>
       <div class="annotation" id="step5-annotation">
         <h2>E. coli vs. Rainfall</h2>
-        <p>The amount of rainfall before a sample is collected is often a good indicator of whether E. coli levels will exceed the standard.</p>
-        <p>Stormwater runoff from urban areas often have high bacteria levels, which result in high levels in the river.</p>
-        <p>This chart shows the relationship between E. coli and the amount of rainfall over the 48 hours before each sample was collected.</p>
-        <p>More rainfall tends to be associated with higher E. coli.</p>
+        <p>Rainfall is a good predictor of E. coli levels in urban rivers due to stormwater runoff, which often has high bacteria levels.</p>
+        <p>This chart shows the relationship between E. coli and the total rainfall over the previous 48 hours of each sample.</p>
+        <p>A threshold of 0.25 inches of rainfall is used to assign wet and dry weather conditions to each sample. The donut chart shows that 22% of all samples were collected under wet weather conditions.</p>
+        <p>Do the wet weather samples tend to have higher E. coli levels and more exceedences than the dry weather samples?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step4')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
@@ -272,6 +272,7 @@
       </div>
       <div class="annotation" id="step6-annotation">
         <h2>Step 6</h2>
+        <p><button class="btn btn-primary" onclick="selectWet()">Wet</button></p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</a>
@@ -299,13 +300,21 @@
       </div>
     </div>
     <div class="chart-container">
-      <div id="chart-ts" style="display:none;"></div>
-      <div id="chart-exceed" style="display:none;"></div>
-      <div id="chart-precip" style="display:none;"></div>
-      <div id="chart-weather" style="display:none;"></div>
+      <div id="chart-ts" style="display:none;">
+        <strong>E. coli Samples over Time</strong>
+      </div>
+      <div id="chart-exceed" style="display:none;">
+        <strong>% of Samples Above/Below Standard</strong>
+      </div>
+      <div id="chart-precip" style="display:none;">
+        <strong>E. coli Samples vs. Previous 48-hour Rainfall</strong>
+      </div>
+      <div id="chart-weather" style="display:none;">
+        <strong>% of Samples with Dry/Wet Weather</strong>
+      </div>
       <div id="slider-weather-container" style="display:none;">
-        <p>Change Rainfall Threshold: <span id="slider-weather-value"></span></p>
         <div id="slider-weather"></div>
+        <p>Rainfall Threshold: <span id="slider-weather-value"></span></p>
       </div>
     </div>
     <div class="loading">
@@ -320,7 +329,8 @@
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<!-- <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+<script src="https://d3js.org/d3.v3.js" charset="utf-8"></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="https://d3js.org/queue.v1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
@@ -330,9 +340,24 @@
 <script>
 dc.constants.EVENT_DELAY = 0;
 
-
 var state = {
     step: undefined,
+    steps: {},
+    colors: {
+      exceed: {
+        unsafe: '#FF4500',
+        safe: '#00BFFF'
+      },
+      weather: {
+        // 'dry': '#D1E231',
+        // dry: '#CCAD3A',
+        // dry: '#B2DF8A',
+        dry: '#FF7F00',
+        wet: '#33A02C'
+        // wet: '#A6CEE3'
+        // wet: '#EA6CDD'
+      }
+    },
     standard: {
       label: 'Boating Standard',
       value: 1260
@@ -341,12 +366,10 @@ var state = {
       precip48: 0.25
     },
     charts: {}
-  },
-  steps = {};
+  };
 
-steps.step1 = {
+state.steps.step1 = {
   enter: function () {
-    console.log('step1.enter()');
     d3.select('.chart-container').append('div').attr('id', 'map');
     this.map = L.map('map').setView([42.41, -71.072], 14);
 
@@ -372,21 +395,20 @@ steps.step1 = {
     //   });
   },
   exit: function (done) {
-    console.log('step1.exit()');
     this.map.remove();
     d3.select('#map').remove();
     done();
   }
 };
 
-steps.step2 = {
+state.steps.step2 = {
   enter: function () {
     if (!state.charts.ts) {
       state.charts.ts = tsChart(d3.select('#chart-ts'));
     }
 
     state.charts.ts
-      .colors(['#000'])
+      .colors(['#444'])
       .on('renderlet', function(chart) {
         var tip = state.charts.ts.tip();
 
@@ -398,32 +420,30 @@ steps.step2 = {
       })
       .render();
 
-    d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
+    d3.select('#chart-ts').style('display', 'block');
   },
   exit: function (done) {
-    d3.select('#chart-ts')
-      .style('opacity', 0)
-      .style('display', 'none');
+    d3.select('#chart-ts').style('display', 'none');
 
     done();
   }
 };
 
-steps.step3 = {
+state.steps.step3 = {
   enter: function () {
     if (!state.charts.ts) {
       state.charts.ts = tsChart(d3.select('#chart-ts'));
     }
 
+    var colors = state.colors.exceed;
     state.charts.ts
-      .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range(['#ff4500', '#00bfff']))
+      .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range([colors.unsafe, colors.safe]))
       .colorAccessor(function (d) {
         if (d) {
-          return d.key[1] < state.standard.value ? 'Safe' : 'Unsafe';
+          return d.key[3] < state.standard.value ? 'Safe' : 'Unsafe';
         }
       })
       .on('renderlet', function(chart) {
-        console.log('step3 chart-ts renderlet');
         var tip = state.charts.ts.tip();
 
         chart.select("svg").call(tip);
@@ -465,49 +485,43 @@ steps.step3 = {
             .attr('text-anchor', 'end')
             .attr('class', 'hline-label')
             .attr('dy', '-0.5em');
-        text.text('Boating Standard')
+        text.text(state.standard.label)
             .attr('x', chart.x().range()[1])
             .attr('y', chart.y()(state.standard.value));
       })
       .render();
 
-    d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
+    d3.select('#chart-ts').style('display', 'block');
   },
   exit: function (done) {
-    d3.select('#chart-ts')
-      .style('opacity', 0)
-      .style('display', 'none');
+    d3.select('#chart-ts').style('display', 'none');
 
     done();
   }
 };
 
-steps.step4 = {
+state.steps.step4 = {
   enter: function () {
-    steps.step3.enter();
+    state.steps.step3.enter();
 
     if (!state.charts.exceed) {
       state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
     }
 
     state.charts.exceed.render();
-
-    d3.select('#chart-exceed').style('display', 'block').style('opacity', 1);
+    d3.select('#chart-exceed').style('display', 'block');
   },
   exit: function (done) {
-    d3.select('#chart-ts')
-      .style('opacity', 0)
-      .style('display', 'none');
+    state.charts.exceed.filterAll();
 
-    d3.select('#chart-exceed')
-      .style('opacity', 0)
-      .style('display', 'none');
+    d3.select('#chart-ts').style('display', 'none');
+    d3.select('#chart-exceed').style('display', 'none');
 
     done();
   }
 };
 
-steps.step5 = {
+state.steps.step5 = {
   enter: function () {
     var valueFormat = d3.format('.2f');
 
@@ -515,47 +529,13 @@ steps.step5 = {
       state.charts.precip = precipChart(d3.select('#chart-precip'));
     }
 
-    state.charts.precip.x().domain([0, 2.5]);
-    state.charts.precip.render();
-
-    d3.select('#slider-weather-container').style('display', 'block');
-    $('#slider-weather').slider({
-      value: state.weather.precip48,
-      min: 0,
-      max: 2,
-      step: 0.05,
-      slide: function (event, ui) {
-        $('#slider-weather-value').text(ui.value + ' inches');
-        state.weather.precip48 = ui.value;
-        state.charts.precip.redraw();
-      }
-    });
-    $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
-
-    d3.select('#chart-precip').style('display', 'block');
-  },
-  exit: function (done) {
-    d3.select('#chart-precip')
-      .style('display', 'none');
-
-    d3.select('#slider-weather-container').style('display', 'none');
-
-    done();
-  }
-};
-
-steps.step6 = {
-  enter: function () {
-    steps.step5.enter();
-
     if (!state.charts.weather) {
       state.charts.weather = weatherChart(d3.select('#chart-weather'));
     }
 
-    var filters = state.charts.weather.filters();
-
     // reset dimension
-    state.charts.weather.filter(null);
+    state.weather.precip48 = 0.25;
+    state.charts.weather.filterAll();
     state.xf.weather.dim.dispose();
     state.xf.weather.dim = state.ndx.dimension(function (d) {
       return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
@@ -565,19 +545,48 @@ steps.step6 = {
     state.charts.weather
       .dimension(state.xf.weather.dim)
       .group(state.xf.weather.group)
-      .filter([filters])
       .render();
+
+    d3.select('#chart-weather').style('display', 'block');
+
+    state.charts.precip.x().domain([0, 2.5]);
+    state.charts.precip.render();
+
+    d3.select('#chart-precip').style('display', 'block');
+  },
+  exit: function (done) {
+    state.charts.weather.filterAll();
+
+    d3.select('#chart-precip').style('display', 'none');
+    d3.select('#chart-weather').style('display', 'none');
+
+    done();
+  }
+};
+
+state.steps.step6 = {
+  enter: function () {
+    state.steps.step5.enter();
+
+    if (!state.charts.exceed) {
+      state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
+    }
+
+    d3.select('#chart-exceed').style('left', '520px').style('top', '220px');
+
+    state.charts.exceed.render();
+
+    d3.select('#chart-exceed').style('display', 'block');
 
     d3.select('#slider-weather-container').style('display', 'block');
     $('#slider-weather').slider({
       value: state.weather.precip48,
-      min: 0,
+      min: 0.1,
       max: 2,
       step: 0.05,
       slide: function (event, ui) {
         $('#slider-weather-value').text(ui.value + ' inches');
         state.weather.precip48 = ui.value;
-        state.charts.precip.redraw();
 
         var filters = state.charts.weather.filters();
 
@@ -594,19 +603,20 @@ steps.step6 = {
           .group(state.xf.weather.group)
           .filter([filters])
           .redraw();
+
+        state.charts.precip.redraw();
+        state.charts.exceed.redraw();
       }
     });
     $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
-
-    d3.select('#chart-weather').style('display', 'block').style('opacity', 1);
   },
   exit: function (done) {
-    d3.select('#chart-weather')
-      .style('opacity', 0)
-      .style('display', 'none');
+    d3.select('#chart-weather').style('display', 'none');
+    d3.select('#chart-precip').style('display', 'none');
+    d3.select('#chart-exceed').style('left', '0').style('top', '270px').style('display', 'none');
 
-    d3.select('#chart-precip')
-      .style('display', 'none');
+    state.charts.weather.filterAll();
+    state.charts.exceed.filterAll();
 
     d3.select('#slider-weather-container').style('display', 'none');
 
@@ -614,7 +624,7 @@ steps.step6 = {
   }
 };
 
-steps.step7 = {
+state.steps.step7 = {
   enter: function () {
   },
   exit: function (done) {
@@ -622,7 +632,7 @@ steps.step7 = {
   }
 };
 
-steps.step8 = {
+state.steps.step8 = {
   enter: function () {
   },
   exit: function (done) {
@@ -635,6 +645,12 @@ d3.selectAll('.btn-step').on('click', function () {
   switchStep(step);
 });
 
+// function selectWet() {
+//   state.charts.weather.filterAll();
+//   state.charts.weather.filter('Wet');
+//   dc.redrawAll();
+// }
+
 function switchStep (step) {
   d3.selectAll('.btn-step').classed('btn-primary', false).classed('btn-default', true);
   d3.select('#' + step).classed('btn-default', false);
@@ -642,13 +658,13 @@ function switchStep (step) {
   switchAnnotation(step);
 
   if (state.step) {
-    steps[state.step].exit(function () {
+    state.steps[state.step].exit(function () {
       state.step = step;
-      steps[step].enter();
+      state.steps[step].enter();
     });
   } else {
     state.step = step;
-    steps[step].enter();
+    state.steps[step].enter();
   }
 }
 
@@ -663,6 +679,7 @@ function initialize () {
   d3.csv('data/wq.csv')
     .row(function (d) {
       return {
+        id: +d.id,
         site: d.site,
         param: d.param,
         datetime: isoFormat.parse(d.datetime),
@@ -679,12 +696,7 @@ function initialize () {
 
       // keep only ECOLI data collected through 2015 (exclude 2016 data)
       state.data = rows.filter(function (d) {
-        return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015;
-      });
-
-      state.data.forEach(function (d) {
-        d.exceed = d.value > state.standard.value;
-        d.month = d.datetime.getMonth();
+        return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015 && d.site === 'MAR036';
       });
 
       state.ndx = crossfilter(state.data);
@@ -694,7 +706,7 @@ function initialize () {
 
       state.xf.time = {};
       state.xf.time.dim = state.ndx.dimension(function (d) {
-        return [d.datetime, d.value, d.site];
+        return [d.id, d.site, d.datetime, d.value];
       });
       state.xf.time.group = state.xf.time.dim.group();
 
@@ -706,7 +718,7 @@ function initialize () {
 
       state.xf.precip = {};
       state.xf.precip.dim = state.ndx.dimension(function (d) {
-        return [d.precip48, d.value, d.site, d.datetime];
+        return [d.id, d.site, d.datetime, d.precip48, d.value];
       });
       state.xf.precip.group = state.xf.precip.dim.group();
 
@@ -718,7 +730,7 @@ function initialize () {
 
       // state.xf.month = {};
       // state.xf.month.dim = state.ndx.dimension(function (d) {
-      //   return months[d.month];
+      //   return months[d.datetime.getMonth()];
       // });
       // state.xf.month.group = state.xf.month.dim.group();
 
@@ -727,8 +739,6 @@ function initialize () {
         return d.site;
       });
       state.xf.site.group = state.xf.site.dim.group();
-
-      state.xf.site.dim.filterExact('MAR036');
 
       // remove loading frame
       d3.select('.loading')
@@ -744,8 +754,6 @@ function initialize () {
     });
 }
 
-initialize();
-
 function tsChart(el) {
   var valueFormat = d3.format(",.0f");
   var datetimeFormat = d3.time.format("%x %X");
@@ -759,9 +767,9 @@ function tsChart(el) {
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
-             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[0]) + "</strong><br>" +
-             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong>";
+      return "<span>Station: </span> <strong>" + d.key[1] + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[2]) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.key[3]) + " #/100mL</strong>";
     });
 
   var chart = dc.scatterPlot(el)
@@ -776,6 +784,12 @@ function tsChart(el) {
     .clipPadding(10)
     .dimension(state.xf.time.dim)
     .group(state.xf.time.group)
+    .keyAccessor(function (d) {
+      return d.key[2];
+    })
+    .valueAccessor(function (d) {
+      return d.key[3];
+    })
     .excludedOpacity(0.5)
     .transitionDuration(200);
 
@@ -811,13 +825,15 @@ function precipChart (el) {
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
-             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[3]) + "</strong><br>" +
-             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong><br>" +
-             "<span>48-hour Rainfall: </span> <strong>" + precipFormat(d.key[0]) + " inches</strong>";
+      return "<span>Station: </span> <strong>" + d.key[1] + "</strong><br>" +
+             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[2]) + "</strong><br>" +
+             "<span>E. coli: </span> <strong>" + valueFormat(d.key[4]) + " #/100mL</strong><br>" +
+             "<span>48-hour Rainfall: </span> <strong>" + precipFormat(d.key[3]) + " inches</strong>";
     });
 
-  var chart = dc.scatterPlot(el)
+  var colors = state.colors.weather;
+
+  var chart = dc.seriesChart(el)
     .width(500)
     .height(400)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
@@ -825,18 +841,31 @@ function precipChart (el) {
     .y(ecoliScale)
     .brushOn(false)
     .yAxisLabel('E. coli (#/100mL)')
-    .xAxisLabel('48-hour Rainfall (inches)')
+    .xAxisLabel('Previous 48-hour Rainfall (inches)')
     .clipPadding(10)
-    .excludedOpacity(0.5)
-    .transitionDuration(200)
+    .transitionDuration(0)
     .dimension(state.xf.precip.dim)
     .group(state.xf.precip.group)
-    .colors(d3.scale.ordinal().range(['#D1E231', '#EA6CDD']))
-    .colorAccessor(function (d) {
-      if (d) {
-        return d.key[0] < state.weather.precip48 ? "Dry" : "Wet";
-      }
+    .keyAccessor(function (d) {
+      return d.key[3];
     })
+    .valueAccessor(function (d) {
+      return d.key[4];
+    })
+    .seriesAccessor(function(d) {
+      return d.key[3] < state.weather.precip48 ? "Dry" : "Wet";
+    })
+    .colors(d3.scale.ordinal().domain(['Dry', 'Wet']).range([colors.dry, colors.wet]))
+    // .colorAccessor(function (d) {
+    //   if (d) {
+    //     return d.key[0] < state.weather.precip48 ? "Dry" : "Wet";
+    //   }
+    // })
+    .chart(function (c) {
+      return dc.scatterPlot(c)
+        .symbol('circle');
+    })
+    .legend(dc.legend().x(400).y(10).itemHeight(13).gap(5))
     .on('renderlet', function(chart) {
       var tip = state.charts.precip.tip();
 
@@ -863,20 +892,34 @@ function precipChart (el) {
       var path = chartBody.selectAll('path.extra').data([extra_data]);
       path.enter().append('path').attr({
         class: 'extra',
-        stroke: 'black',
+        stroke: state.colors.weather.wet,
         id: 'vline',
         'stroke-dasharray': '5,5'
       });
       path.attr('d', line);
 
       var text = chartBody.selectAll('text.vline-label').data([0]);
+
       text.enter()
         .append('text')
+        .attr('class', 'vline-label');
+
+      text.text('Rainfall Threshold = ' + state.weather.precip48 + ' in');
+
+      if (state.weather.precip48 <= 1.5) {
+        // right side of vline
+        text
           .attr('text-anchor', 'start')
-          .attr('class', 'vline-label')
-          .text('Rainfall Threshold')
           .attr('dx', '0.5em')
           .attr('dy', '-0.5em');
+      } else {
+        // left side of vline
+        text
+          .attr('text-anchor', 'end')
+          .attr('dx', '-0.5em')
+          .attr('dy', '-0.5em');
+      }
+
       text.attr('x', chart.x()(state.weather.precip48))
           .attr('y', chart.y().range()[0]);
 
@@ -930,9 +973,10 @@ function precipChart (el) {
 }
 
 function exceedChart (el) {
+  var colors = state.colors.exceed;
   var chart = dc.pieChart(el)
     .width(300)
-    .height(250)
+    .height(200)
     .innerRadius(30)
     .radius(60)
     .externalLabels(40)
@@ -952,7 +996,7 @@ function exceedChart (el) {
     .dimension(state.xf.exceed.dim)
     .group(state.xf.exceed.group)
     .transitionDuration(200)
-    .colors(d3.scale.ordinal().range(['#00bfff', '#ff4500']))
+    .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range([colors.unsafe, colors.safe]))
     .colorAccessor(function (d) {
       return d.key;
     });
@@ -961,9 +1005,10 @@ function exceedChart (el) {
 }
 
 function weatherChart (el) {
+  var colors = state.colors.weather;
   var chart = dc.pieChart(el)
-    .width(200)
-    .height(200)
+    .width(270)
+    .height(180)
     .innerRadius(30)
     .radius(60)
     .externalLabels(20)
@@ -972,7 +1017,7 @@ function weatherChart (el) {
     .dimension(state.xf.weather.dim)
     .group(state.xf.weather.group)
     .transitionDuration(200)
-    .colors(d3.scale.ordinal().range(['#D1E231', '#EA6CDD']))
+    .colors(d3.scale.ordinal().domain(['Dry', 'Wet']).range([colors.dry, colors.wet]))
     .colorAccessor(function (d) {
       return d.key;
     });
@@ -991,6 +1036,11 @@ function weatherChart (el) {
 
   return chart
 }
+
+$(document).ready(function () {
+  initialize();
+});
+
 </script>
 </body>
 </html>
