@@ -287,16 +287,73 @@ state.steps.step6 = {
 
 state.steps.step7 = {
   enter: function () {
+    d3.select('#step7-additional-annotation').style('display', 'none');
+
+    state.steps.step5.enter();
+
+    if (!state.charts.exceed) {
+      state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
+    }
+
+    d3.select('#chart-exceed').style('left', '520px').style('top', '220px');
+
+    state.charts.exceed.render();
+
+    d3.select('#chart-exceed').style('display', 'block');
+
+    d3.select('#slider-weather-container').style('display', 'block');
+    $('#slider-weather').slider({
+      value: state.weather.precip48,
+      min: 0.1,
+      max: 2,
+      step: 0.05,
+      slide: function (event, ui) {
+        $('#slider-weather-value').text(ui.value + ' inches');
+        state.weather.precip48 = ui.value;
+
+        var filters = state.charts.weather.filters();
+
+        // reset dimension
+        state.charts.weather.filter(null);
+        state.xf.weather.dim.dispose();
+        state.xf.weather.dim = state.ndx.dimension(function (d) {
+          return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+        });
+        state.xf.weather.group = state.xf.weather.dim.group();
+
+        state.charts.weather
+          .dimension(state.xf.weather.dim)
+          .group(state.xf.weather.group)
+          .filter([filters])
+          .redraw();
+
+        state.charts.precip.redraw();
+        state.charts.exceed.redraw();
+      }
+    });
+    $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
   },
   exit: function (done) {
+    d3.select('#chart-weather').style('display', 'none');
+    d3.select('#chart-precip').style('display', 'none');
+    d3.select('#chart-exceed').style('left', '0').style('top', '270px').style('display', 'none');
+
+    state.charts.weather.filterAll();
+    state.charts.exceed.filterAll();
+
+    d3.select('#slider-weather-container').style('display', 'none');
+
     done();
   }
 };
 
+
 state.steps.step8 = {
   enter: function () {
+    d3.select('#img-explore').style('display', 'block');
   },
   exit: function (done) {
+    d3.select('#img-explore').style('display', 'none');
     done();
   }
 };
@@ -311,6 +368,13 @@ function selectWet() {
   state.charts.weather.filter('Wet');
   dc.redrawAll();
   d3.select('#step6-additional-annotation').style('display', 'block');
+}
+
+function selectDry() {
+  state.charts.weather.filterAll();
+  state.charts.weather.filter('Dry');
+  dc.redrawAll();
+  d3.select('#step7-additional-annotation').style('display', 'block');
 }
 
 function switchStep (step) {

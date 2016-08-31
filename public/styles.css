@@ -1,3 +1,12 @@
+h1 {
+  font-size: 32px;
+}
+
+hr {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 div.dc-chart {
   float: none;
 }
@@ -79,7 +88,7 @@ svg {
 .stepper {
   position: relative;
   width: 980px;
-  height: 500px;
+  height: 480px;
   background-color: #fff;
   margin-top: 10px;
 }
