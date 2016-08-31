@@ -215,6 +215,7 @@
       </div>
     </div>
     <div class="chart-container">
+      <div id="chart-ts" style="display:none;"></div>
     </div>
     <div class="loading">
       <p>Loading...</p>
@@ -238,10 +239,17 @@
 dc.constants.EVENT_DELAY = 0;
 
 var state = {
-      step: undefined,
-      charts: {}
+    step: undefined,
+    standard: {
+      label: 'Boating Standard',
+      value: 1260
     },
-    steps = {};
+    weather: {
+      precip48: 0.5
+    },
+    charts: {}
+  },
+  steps = {};
 
 steps.step1 = {
   enter: function () {
@@ -270,53 +278,231 @@ steps.step1 = {
     //     this.closePopup();
     //   });
   },
-  exit: function (cb) {
+  exit: function (done) {
     console.log('step1.exit()');
     this.map.remove();
     d3.select('#map').remove();
-    cb();
+    done();
   }
 };
 
 steps.step2 = {
   enter: function () {
-    console.log('step2.enter()');
-    this.el = d3.select('.chart-container').append('div').attr('id', 'step1-chart');
-    this.chart = setupTimeseries(this.el);
-    this.chart.render();
+    // console.log('step2.enter()');
+    if (!state.charts.ts) {
+      // console.log('init: state.charts.ts');
+      state.charts.ts = tsChart(d3.select('#chart-ts'));
+    }
+
+    state.charts.ts
+      .colors(['#000'])
+      .on('renderlet', function(chart) {
+        var tip = state.charts.ts.tip();
+
+        chart.select("svg").call(tip);
+
+        chart.selectAll("path.symbol")
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+      })
+      .render();
+
+    d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
   },
-  exit: function (cb) {
-    console.log('step2.exit()');
-    this.el
-      .transition()
-      .delay(0)
-      .duration(400)
+  exit: function (done) {
+    // console.log('step2.exit()');
+
+    d3.select('#chart-ts')
       .style('opacity', 0)
-      .each("end", function (d) {
-        d3.select(this).remove();
-        cb();
-      });
+      .style('display', 'none');
+
+    done();
+
+    // d3.select('#chart-ts')
+    //   .transition()
+    //   .delay(0)
+    //   .duration(400)
+    //   .style('opacity', 0)
+    //   .each('end', function (d) {
+    //     d3.select(this).style('display', 'none');
+    //     done();
+    //   });
   }
 };
 
 steps.step3 = {
   enter: function () {
     console.log('step3.enter()');
-    this.el = d3.select('.chart-container').append('div').attr('id', 'step1-chart');
-    this.chart = setupTimeseries2(this.el);
-    this.chart.render();
+
+    if (!state.charts.ts) {
+      // console.log('init: state.charts.ts');
+      state.charts.ts = tsChart(d3.select('#chart-ts'));
+    }
+
+    state.charts.ts
+      .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range(['#ff4500', '#00bfff']))
+      .colorAccessor(function (d) {
+        if (d) {
+          return d.key[1] < state.standard.value ? 'Safe' : 'Unsafe';
+        }
+      })
+      .on('renderlet', function(chart) {
+        console.log('step3 chart-ts renderlet');
+        var tip = state.charts.ts.tip();
+
+        chart.select("svg").call(tip);
+
+        chart.selectAll("path.symbol")
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+
+        var extra_data = [
+          {
+            x: chart.x().range()[0],
+            y: chart.y()(state.standard.value)
+          }, {
+            x: chart.x().range()[1],
+            y: chart.y()(state.standard.value)
+          }
+        ];
+
+        var line = d3.svg.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .interpolate('linear');
+
+        var chartBody = chart.select('g.chart-body');
+
+        var path = chartBody.selectAll('path.extra').data([extra_data]);
+        path.enter().append('path').attr({
+          class: 'extra',
+          stroke: 'red',
+          id: 'hline',
+          'stroke-dasharray': '5,5'
+        });
+        path.attr('d', line);
+
+        var text = chartBody.selectAll('text.hline-label').data([0]);
+
+        text.enter()
+          .append('text')
+            .attr('text-anchor', 'end')
+            .attr('class', 'hline-label')
+            .attr('dy', '-0.5em');
+        text.text('Boating Standard')
+            .attr('x', chart.x().range()[1])
+            .attr('y', chart.y()(state.standard.value));
+      })
+      .render();
+
+    d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
   },
-  exit: function (cb) {
-    console.log('step3.exit()');
-    this.el
-      .transition()
-      .delay(0)
-      .duration(400)
+  exit: function (done) {
+    // console.log('step3.exit()');
+
+    d3.select('#chart-ts')
       .style('opacity', 0)
-      .each("end", function (d) {
-        d3.select(this).remove();
-        cb();
-      });
+      .style('display', 'none');
+
+    done();
+
+    // d3.select('#chart-ts')
+    //   .transition()
+    //   .delay(0)
+    //   .duration(400)
+    //   .style('opacity', 0)
+    //   .each('end', function (d) {
+    //     d3.select(this).style('display', 'none');
+    //     done();
+    //   });
+  }
+};
+
+steps.step3 = {
+  enter: function () {
+    console.log('step3.enter()');
+
+    if (!state.charts.ts) {
+      // console.log('init: state.charts.ts');
+      state.charts.ts = tsChart(d3.select('#chart-ts'));
+    }
+
+    state.charts.ts
+      .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range(['#ff4500', '#00bfff']))
+      .colorAccessor(function (d) {
+        if (d) {
+          return d.key[1] < state.standard.value ? 'Safe' : 'Unsafe';
+        }
+      })
+      .on('renderlet', function(chart) {
+        console.log('step3 chart-ts renderlet');
+        var tip = state.charts.ts.tip();
+
+        chart.select("svg").call(tip);
+
+        chart.selectAll("path.symbol")
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+
+        var extra_data = [
+          {
+            x: chart.x().range()[0],
+            y: chart.y()(state.standard.value)
+          }, {
+            x: chart.x().range()[1],
+            y: chart.y()(state.standard.value)
+          }
+        ];
+
+        var line = d3.svg.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .interpolate('linear');
+
+        var chartBody = chart.select('g.chart-body');
+
+        var path = chartBody.selectAll('path.extra').data([extra_data]);
+        path.enter().append('path').attr({
+          class: 'extra',
+          stroke: 'red',
+          id: 'hline',
+          'stroke-dasharray': '5,5'
+        });
+        path.attr('d', line);
+
+        var text = chartBody.selectAll('text.hline-label').data([0]);
+
+        text.enter()
+          .append('text')
+            .attr('text-anchor', 'end')
+            .attr('class', 'hline-label')
+            .attr('dy', '-0.5em');
+        text.text('Boating Standard')
+            .attr('x', chart.x().range()[1])
+            .attr('y', chart.y()(state.standard.value));
+      })
+      .render();
+
+    d3.select('#chart-ts').style('display', 'block').style('opacity', 1);
+  },
+  exit: function (done) {
+    // console.log('step3.exit()');
+
+    d3.select('#chart-ts')
+      .style('opacity', 0)
+      .style('display', 'none');
+
+    done();
+
+    // d3.select('#chart-ts')
+    //   .transition()
+    //   .delay(0)
+    //   .duration(400)
+    //   .style('opacity', 0)
+    //   .each('end', function (d) {
+    //     d3.select(this).style('display', 'none');
+    //     done();
+    //   });
   }
 };
 
@@ -373,8 +559,7 @@ function initialize () {
       });
 
       state.data.forEach(function (d) {
-        // d.exceed = d.value > state.params.standard;
-        d.exceed = d.value > 1260;
+        d.exceed = d.value > state.standard.value;
         d.month = d.datetime.getMonth();
       });
 
@@ -413,9 +598,6 @@ function initialize () {
 
 initialize();
 
-
-
-
 function setupCrossfilter () {
   // state.ndx = crossfilter(state.data);
   // state.all = state.ndx.groupAll();
@@ -453,7 +635,7 @@ function setupCrossfilter () {
   // state.xf.precip.group = state.xf.precip.dim.group();
 }
 
-function setupTimeseries (el) {
+function tsChart(el) {
   var valueFormat = d3.format(",.0f");
   var datetimeFormat = d3.time.format("%x %X");
 
@@ -473,7 +655,7 @@ function setupTimeseries (el) {
 
   var chart = dc.scatterPlot(el)
     .width(720)
-    .height(300)
+    .height(250)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .x(timeScale)
     .y(ecoliScale)
@@ -482,115 +664,15 @@ function setupTimeseries (el) {
     .xAxisLabel('Date')
     .clipPadding(10)
     .dimension(state.xf.time.dim)
-    .excludedOpacity(0.5)
     .group(state.xf.time.group)
-    .colors(['#000'])
-    .transitionDuration(200)
-    .on('renderlet', function(chart) {
-      chart.select("svg").call(tip);
-
-      chart.selectAll("path.symbol")
-        .on('mouseover', tip.show)
-        .on('mouseout', tip.hide);
-    });
-  var tickValues = [];
-  [0, 1, 2, 3, 4, 5].forEach(function (exp) {
-    [1, 2, 5].forEach(function (i) {
-      tickValues.push(i*Math.pow(10, exp));
-    });
-  });
-  chart.yAxis().tickFormat(function (d) {
-    return tickValues.indexOf(d) >= 0 ? valueFormat(d) : "";
-  });
-
-  return chart;
-
-}
-
-function setupTimeseries2 (el) {
-  var valueFormat = d3.format(",.0f");
-  var datetimeFormat = d3.time.format("%x %X");
-
-  var timeScale = d3.time.scale()
-    .domain(d3.extent(state.data, function(d) { return d.datetime; }));
-  var ecoliScale = d3.scale.log()
-    .domain([1, d3.max(state.data, function(d) { return d.value; }) * 2]);
-
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-      return "<span>Station: </span> <strong>" + d.key[2] + "</strong><br>" +
-             "<span>Datetime: </span> <strong>" + datetimeFormat(d.key[0]) + "</strong><br>" +
-             "<span>E. coli: </span> <strong>" + valueFormat(d.key[1]) + " #/100mL</strong>";
-    });
-
-  var chart = dc.scatterPlot(el)
-    .width(720)
-    .height(300)
-    .margins({top: 10, right: 50, bottom: 30, left: 50})
-    .x(timeScale)
-    .y(ecoliScale)
-    .brushOn(false)
-    .yAxisLabel('E. coli (#/100mL)')
-    .xAxisLabel('Date')
-    .clipPadding(10)
-    .dimension(state.xf.time.dim)
     .excludedOpacity(0.5)
-    .group(state.xf.time.group)
-    .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range(['#ff4500', '#00bfff']))
-    .colorAccessor(function (d) {
-      if (d) {
-        return d.key[1] < 1260 ? "Safe" : "Unsafe";
-      }
-    })
-    .transitionDuration(200)
-    .on('renderlet', function(chart) {
-      chart.select("svg").call(tip);
+    .transitionDuration(200);
 
-      chart.selectAll("path.symbol")
-        .on('mouseover', function (d, i) {
-          console.log(d);
-          tip.show(d, i);
-        })
-        .on('mouseout', tip.hide);
+  // access tip function for customizing renderlet events
+  chart.tip = function () {
+    return tip;
+  }
 
-      var extra_data = [
-        {
-          x: chart.x().range()[0],
-          y: chart.y()(1260)
-        }, {
-          x: chart.x().range()[1],
-          y: chart.y()(1260)
-        }
-      ];
-      var line = d3.svg.line()
-          .x(function(d) { return d.x; })
-          .y(function(d) { return d.y; })
-          .interpolate('linear');
-      var chartBody = chart.select('g.chart-body');
-      var path = chartBody.selectAll('path.extra').data([extra_data]);
-      path.enter().append('path').attr({
-        class: 'extra',
-        stroke: 'red',
-        id: 'hline',
-        'stroke-dasharray': '5,5'
-      });
-      path.attr('d', line);
-
-      var text = chartBody.selectAll('text.hline-label').data([0]);
-
-      text.enter()
-        .append('text')
-          .attr('text-anchor', 'end')
-          .attr('class', 'hline-label')
-          .attr('dy', '-0.5em');
-      text.text('Boating Standard')
-          .attr('x', chart.x().range()[1])
-          .attr('y', chart.y()(1260));
-    });
-
-  // specify tick mark values
   var tickValues = [];
   [0, 1, 2, 3, 4, 5].forEach(function (exp) {
     [1, 2, 5].forEach(function (i) {
@@ -603,7 +685,6 @@ function setupTimeseries2 (el) {
 
   return chart;
 }
-
 </script>
 </body>
 </html>
