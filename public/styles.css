@@ -7,9 +7,9 @@ body {
   background-color: white;
   border-left: 1px solid #aaa;
   border-right: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
   padding-left: 30px;
   padding-right: 30px;
-  /*height: 100%;*/
 }
 
 h1 {

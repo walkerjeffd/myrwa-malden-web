@@ -244,6 +244,23 @@ state.steps.step6 = {
 
     d3.select('#chart-exceed').style('display', 'block');
 
+    d3.select('#step6-btn-select').on('click', function () {
+      state.charts.weather.filterAll();
+      state.charts.weather.filter('Wet');
+      d3.select('#step6-additional-annotation').style('display', 'block');
+      d3.select('#step6-btn-select').style('display', 'none');
+      d3.select('#step6-btn-reset').style('display', 'block');
+      dc.redrawAll();
+    });
+
+    d3.select('#step6-btn-reset').on('click', function () {
+      state.charts.weather.filterAll();
+      d3.select('#step6-additional-annotation').style('display', 'none');
+      d3.select('#step6-btn-select').style('display', 'block');
+      d3.select('#step6-btn-reset').style('display', 'none');
+      dc.redrawAll();
+    })
+
     // d3.select('#slider-weather-container').style('display', 'block');
     // $('#slider-weather').slider({
     //   value: state.weather.precip48,
@@ -306,6 +323,23 @@ state.steps.step7 = {
 
     d3.select('#chart-exceed').style('display', 'block');
 
+    d3.select('#step7-btn-select').on('click', function () {
+      state.charts.weather.filterAll();
+      state.charts.weather.filter('Dry');
+      d3.select('#step7-additional-annotation').style('display', 'block');
+      d3.select('#step7-btn-select').style('display', 'none');
+      d3.select('#step7-btn-reset').style('display', 'block');
+      dc.redrawAll();
+    });
+
+    d3.select('#step7-btn-reset').on('click', function () {
+      state.charts.weather.filterAll();
+      d3.select('#step7-additional-annotation').style('display', 'none');
+      d3.select('#step7-btn-select').style('display', 'block');
+      d3.select('#step7-btn-reset').style('display', 'none');
+      dc.redrawAll();
+    })
+
     // d3.select('#slider-weather-container').style('display', 'block');
     // $('#slider-weather').slider({
     //   value: state.weather.precip48,
@@ -367,12 +401,12 @@ d3.selectAll('.btn-step').on('click', function () {
   switchStep(step);
 });
 
-function selectWet() {
-  state.charts.weather.filterAll();
-  state.charts.weather.filter('Wet');
-  dc.redrawAll();
-  d3.select('#step6-additional-annotation').style('display', 'block');
-}
+// function selectWet() {
+//   state.charts.weather.filterAll();
+//   state.charts.weather.filter('Wet');
+//   dc.redrawAll();
+//   d3.select('#step6-additional-annotation').style('display', 'block');
+// }
 
 function selectDry() {
   state.charts.weather.filterAll();

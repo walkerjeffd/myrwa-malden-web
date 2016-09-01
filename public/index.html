@@ -100,7 +100,10 @@
       <div class="annotation" id="step6-annotation">
         <h2>Wet Weather Exceedences</h2>
         <p>Based on the scatter plot, it looks like wet weather samples tend to exceed the standard more often than dry weather samples. Click this button to select only the wet weather samples.</p>
-        <p><button class="btn btn-primary btn-block btn-xs" onclick="selectWet()">Select Wet Weather Samples</button></p>
+        <p>
+          <button class="btn btn-primary btn-block btn-xs" id="step6-btn-select">Select Wet Weather Samples</button>
+          <button class="btn btn-primary btn-block btn-xs" id="step6-btn-reset" style="display:none;">Reset to All Samples</button>
+        </p>
         <div id="step6-additional-annotation" style="display:none">
           <p>We now see that 76% of <em>wet weather</em> samples were above the boating standard, and only 24% were below.</p>
           <p>So on any given day, if it has rained 0.25 inches or more over the previous 48 hours, then we can expect a greater chance that bacteria levels will be too high.</p>
@@ -116,7 +119,10 @@
       <div class="annotation" id="step7-annotation">
         <h2>Dry Weather Exceedences</h2>
         <p>Click this button to select only the dry weather samples.</p>
-        <p><button class="btn btn-primary btn-block btn-xs" onclick="selectDry()">Select Dry Weather Samples</button></p>
+        <p>
+          <button class="btn btn-primary btn-block btn-xs" id="step7-btn-select">Select Dry Weather Samples</button>
+          <button class="btn btn-primary btn-block btn-xs" id="step7-btn-reset" style="display:none;">Reset to All Samples</button>
+        </p>
         <div id="step7-additional-annotation" style="display:none">
           <p>Now we see that only 16% of the <em>dry weather</em> samples were above the standard, and 84% were below.</p>
           <p>So even if there has been little or no recent rainfall, there is still a small chance that bacteria levels be too high and indicate a public health risk.</p>
@@ -174,19 +180,22 @@
   <hr>
   <h2>About</h2>
 
-  <p>This interactive data visualization presents indicator bacteria data collected by the <a href="http://mysticriver.org">Mystic River Watershed Association (MyRWA)</a> at their <a href="http://mysticriver.org/baseline/" target="_blank">baseline monitoring program</a> station on the Malden River from 2002 through 2015.</p>
+  <p>This interactive data visualization presents indicator bacteria data collected by the <a href="http://mysticriver.org">Mystic River Watershed Association (MyRWA)</a> at their <a href="http://mysticriver.org/baseline/">baseline monitoring program</a> station on the Malden River from 2002 through 2015.</p>
 
-  <p>The Malden River is about 2.5 miles in length and located within the Mystic River Watershed just north of the city of Boston, MA. A long history of industrial activity and urban development have resulted in extensive contamination of the sediments and water column of this river that poses significant public health risks due to elevated concentrations of various pollutants.</p>
+  <p>The Malden River is located within the Mystic River Watershed just north of the city of Boston, MA. A long history of industrial activity and urban development have resulted in extensive contamination of the sediments and water column, which pose significant public health risks due to elevated concentrations of various pollutants.</p>
 
-  <p>This visualization focuses on levels of E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria">fecal indicator bacteria</a> commonly used to represent the public health risk associated with fecal contamination in freshwater lakes and rivers.</p>
+  <p>This visualization focuses on historical levels of E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria">fecal indicator bacteria</a> commonly used to represent the public health risk associated with potential fecal contamination of freshwater lakes and rivers.</p>
 
   <p>The goals of this visualization are to:</p>
 
   <ol>
-    <li>Present the historical bacteria levels measured by MyRWA at their Baseline Monitoring Station on the Malden River,</li>
-    <li>Explain how bacteria levels relate to public health risk, and</li>
-    <li>Show how rainfall can be used to estimate whether bacteria levels will be too high on any given day.</li>
+    <li>Present historical bacteria levels measured by MyRWA at their monitoring station on the Malden River,</li>
+    <li>Explain how bacteria levels relate to public health risk for boaters and other non-swimmers,</li>
+    <li>Show how frequently measured bacteria exceed an acceptable limit, and</li>
+    <li>Demonstrate how rainfall can be used to estimate whether bacteria levels will exceed that limit on any given day.</li>
   </ol>
+
+  <p>If you have any questions about this website or the underlying dataset, please feel free to contact us at <a href="mailto:contact@mysticriver.org">contact@mysticriver.org</a>.</p>
 
   <hr>
 
@@ -194,7 +203,7 @@
 
   <p>For more information about water quality conditions in the Malden River, see the accompanying technical report that includes more detailed analysis of bacteria levels as well as other water quality variables such as dissolved oxygen, phosphorus, and chlorophyll a.</p>
 
-  <blockquote><a href="#"><strong>Malden River: Exploratory Water Quality Data Analysis</strong></a> prepared for the Mystic River Watershed Association by Jeffrey D Walker, PhD, Walker Environmental Research, LLC. August 9, 2016.</blockquote>
+  <blockquote><a href="https://s3.amazonaws.com/myrwa/malden-wq-2016/myrwa-malden-wq-20160809.pdf" target="_blank"><strong>Malden River: Exploratory Water Quality Data Analysis</strong></a> prepared for the Mystic River Watershed Association by Jeffrey D Walker, PhD, Walker Environmental Research, LLC. August 9, 2016.</blockquote>
 
   <hr>
 
