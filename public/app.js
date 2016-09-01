@@ -298,6 +298,9 @@ state.steps.step6 = {
     d3.select('#chart-precip').style('display', 'none');
     d3.select('#chart-exceed').style('top', '0').style('display', 'none');
 
+    d3.select('#step6-btn-select').style('display', 'block');
+    d3.select('#step6-btn-reset').style('display', 'none');
+
     state.charts.weather.filterAll();
     state.charts.exceed.filterAll();
 
@@ -376,6 +379,9 @@ state.steps.step7 = {
     d3.select('#chart-weather').style('display', 'none');
     d3.select('#chart-precip').style('display', 'none');
     d3.select('#chart-exceed').style('top', '0').style('display', 'none');
+
+    d3.select('#step7-btn-select').style('display', 'block');
+    d3.select('#step7-btn-reset').style('display', 'none');
 
     state.charts.weather.filterAll();
     state.charts.exceed.filterAll();
