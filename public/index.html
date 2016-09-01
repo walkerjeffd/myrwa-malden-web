@@ -13,7 +13,9 @@
 <body>
 
 <div class="container">
-  <h1>Water Quality Conditions on the Malden River</h1>
+  <div class="text-center">
+    <h1>Bacteria Levels and Public Health Risk On the Malden River</h1>
+  </div>
 
   <hr>
 
@@ -35,8 +37,8 @@
     <div class="annotation-container">
       <div class="annotation" id="step1-annotation" style="display:block">
         <h2>Sampling Location</h2>
-        <p>Each month, MyRWA volunteers collect water quality samples throughout the Mystic River watershed as part of the <a href="http://mysticriver.org/baseline/" target="_blank">Baseline Water Quality Monitoring Program</a>.</p>
-        <p>This map shows the monitoring station where samples are collected on the Malden River (Station ID: MAR036).</p>
+        <p>Each month, MyRWA volunteers collect water quality samples at monitoring stations throughout the Mystic River watershed as part of their <a href="http://mysticriver.org/baseline/" target="_blank">Baseline Water Quality Monitoring Program</a>.</p>
+        <p>This story focuses on bacteria data collected at one station (Station ID: MAR036) on the Malden River in the city of Medford, MA.</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default disabled"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -46,10 +48,10 @@
       </div>
       <div class="annotation" id="step2-annotation">
         <h2>E. coli Samples</h2>
-        <p>Each water quality sample is analyzed for E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria" target="_blank">indicator bacteria</a>.</p>
-        <p>Indicator bacteria are not necessarily harmful, but are used as indicators of public health risks. Their presence suggests that other, more harmful bacteria or viruses may also be present.</p>
-        <p>The chart shows the E. coli levels of each sample collected on the Malden River over the past 14 years.</p>
-        <p>But what do these levels mean? How often is the river safe for boating or other recreation?</p>
+        <p>Each monthly water quality sample is analyzed for E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria" target="_blank">indicator bacteria</a>.</p>
+        <p>Although E. coli bacteria are not necessarily harmful in and of themselves, they are commonly used as indicators of fecal contamination, which can contain other, more harmful bacteria species and viruses posing significant public health risk.</p>
+        <p>The chart to the right shows the E. coli level of each sample collected by MyRWA at their baseline monitoring station on the Malden River over the past 14 years.</p>
+        <p>But which samples indicate high public health risk? How frequently are the levels too high?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step1')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -59,9 +61,9 @@
       </div>
       <div class="annotation" id="step3-annotation">
         <h2>Boating Standard</h2>
-        <p>Massachusetts has a water quality standard for E. coli that states no sample should exceed 1,260 #/100mL (red line) in waterways used for boating and other "secondary" recreational uses.</p>
-        <p>Samples above the standard (in red) are called exceedences and indicate an unacceptably high level of public health risk.</p>
-        <p>Samples below the standard (in blue) indicate a low public health risk when the river would be safe for boating.</p>
+        <p>Massachusetts <a href="http://www.mass.gov/eea/agencies/massdep/water/regulations/314-cmr-4-00-mass-surface-water-quality-standards.html" target="_blank">state law</a> includes a water quality standard for E. coli stating that no more than 10% of samples may exceed 1,260 #/100mL in waterways used primarily for boating.*</p>
+        <p>Samples above the standard (in red) indicate relatively high public health risk for people boating on the river due to the likely presence of fecal contamination.</p>
+        <p>Samples below the standard (in blue) indicate a low public health risk and the river would be relatively safe for boating.</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step2')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -71,9 +73,9 @@
       </div>
       <div class="annotation" id="step4-annotation">
         <h2>Exceedence Frequency</h2>
-        <p>If we count the number of samples above and below the standard, and then divide by the total number of samples, then we can estimate the percent of time that bacteria levels are safe and unsafe.</p>
-        <p>The donut chart shows the 30% of all samples over the past 14 years have E. coli levels exceeding the boating standard.</p>
-        <p>Why do some days have higher levels than others? Is there a way to predict whether E. coli levels are safe or unsafe on any given day?</p>
+        <p>By counting the number of samples above and below the standard, and then dividing by the total number of samples, we can estimate the percent of time that bacteria levels indicate high and low public health risk.</p>
+        <p>The bottom chart states that 30% of all samples over the past 14 years had E. coli levels exceeding the boating standard.</p>
+        <p>But why do some days have higher bacteria levels than others? Is there a way to predict whether E. coli levels are above or below the standard on any given day?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step3')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -83,10 +85,11 @@
       </div>
       <div class="annotation" id="step5-annotation">
         <h2>E. coli vs. Rainfall</h2>
-        <p>Rainfall is a good predictor of E. coli levels in urban rivers due to stormwater runoff, which often has high bacteria levels.</p>
-        <p>This chart shows the relationship between E. coli and the total rainfall over the previous 48 hours of each sample.</p>
-        <p>A threshold of 0.25 inches of rainfall is used to assign wet and dry weather conditions to each sample. The donut chart shows that 23% of all samples were collected under wet weather conditions.</p>
-        <p>Do the wet weather samples tend to have higher E. coli levels and more exceedences than the dry weather samples?</p>
+        <p>Rainfall is a often good predictor of E. coli levels in urban rivers because it generates stormwater runoff that can contain high levels of bacteria.</p>
+        <p>The chart on the left shows the relationship between E. coli and total rainfall over the previous 48 hours of when each sample was collected.</p>
+        <p>The samples are categorized according to dry and wet weather. Samples collected after 0.25 inches or more of rainfall are considered as wet weather, the others as dry weather.</p>
+        <p>The chart on the right states that 23% of all samples were collected under wet weather conditions.</p>
+        <p>Do wet weather samples tend to have higher E. coli levels than the dry weather samples?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
             <button type="button" class="btn btn-default" onclick="switchStep('step4')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -97,11 +100,11 @@
       <div class="annotation" id="step6-annotation">
         <h2>Wet Weather Exceedences</h2>
         <p>Based on the scatter plot, it looks like wet weather samples tend to exceed the standard more often than dry weather samples. Click this button to select only the wet weather samples.</p>
-        <p><button class="btn btn-primary btn-block" onclick="selectWet()">Select Wet Weather Samples</button></p>
+        <p><button class="btn btn-primary btn-block btn-xs" onclick="selectWet()">Select Wet Weather Samples</button></p>
         <div id="step6-additional-annotation" style="display:none">
           <p>We now see that 76% of <em>wet weather</em> samples were above the boating standard, and only 24% were below.</p>
-          <p>Try changing the rainfall threshold using the slider below the scatter plot to include more or fewer samples in the wet weather category. How do the results change?</p>
-          <p>How often do dry weather samples exceed that standard?</p>
+          <p>So on any given day, if it has rained 0.25 inches or more over the previous 48 hours, then we can expect a greater chance that bacteria levels will be too high.</p>
+          <p>Next, let's look at often dry weather samples exceed the standard.</p>
           <div class="text-center" style="margin-top:20px">
             <div class="btn-group" role="group">
               <button type="button" class="btn btn-default" onclick="switchStep('step5')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -112,12 +115,12 @@
       </div>
       <div class="annotation" id="step7-annotation">
         <h2>Dry Weather Exceedences</h2>
-        <p>How often do dry weather samples exceed the boating standard?</p>
         <p>Click this button to select only the dry weather samples.</p>
-        <p><button class="btn btn-primary btn-block" onclick="selectDry()">Select Dry Weather Samples</button></p>
+        <p><button class="btn btn-primary btn-block btn-xs" onclick="selectDry()">Select Dry Weather Samples</button></p>
         <div id="step7-additional-annotation" style="display:none">
-          <p>Now we see that 16% of the dry weather samples exceed the standard, and 84% are below.</p>
-          <p>So even if there has been little or no recent rainfall, there can still be some chance of a public health risk associated with high bacteria levels. However, we now know that this chance is much lower than during wet weather.</p>
+          <p>Now we see that only 16% of the <em>dry weather</em> samples were above the standard, and 84% were below.</p>
+          <p>So even if there has been little or no recent rainfall, there is still a small chance that bacteria levels be too high and indicate a public health risk.</p>
+          <p>However, this chance is much lower than during wet weather, which was more frequently associated with high public health risk.</p>
           <div class="text-center" style="margin-top:20px">
             <div class="btn-group" role="group">
               <button type="button" class="btn btn-default" onclick="switchStep('step6')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -128,9 +131,9 @@
       </div>
       <div class="annotation" id="step8-annotation">
         <h2>Summary</h2>
-        <p>Thanks for visiting and learning more about water quality conditions in the Malden River.</p>
-        <p>Click the image to the right to continue exploring this dataset through an interactive dashboard.</p>
-        <p>The dashboard contains many of the charts we have already seen as well as some additional charts allowing you to drill down into the data.</p>
+        <p>Thanks for visiting and learning about the water quality conditions and the effect of rainfall on public health risks in the Malden River.</p>
+        <p>If you want to explore the data further, click the image to the right to open an interactive dashboard.</p>
+        <p>The dashboard contains many of the charts we have already seen as well as some additional charts and controls to compare different types of recreation and varying rainfall thresholds for defining dry and wet weather conditions.</p>
         <p>If you have any questions about this site or the underlying dataset, please feel free to contact us at <a href="mailto:contact@mysticriver.org">contact@mysticriver.org</a>.</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
@@ -142,16 +145,16 @@
     </div>
     <div class="chart-container">
       <div id="chart-ts" style="display:none;">
-        <strong>E. coli Samples over Time</strong>
+        <div><strong>E. coli Samples over Time</strong></div>
       </div>
       <div id="chart-exceed" style="display:none;">
-        <strong>% of Samples Above/Below Standard</strong>
+        <div class="text-center"><strong>% of Samples by Public Health Risk</strong></div>
       </div>
       <div id="chart-precip" style="display:none;">
-        <strong>E. coli Samples vs. Previous 48-hour Rainfall</strong>
+        <div><strong>E. coli Samples vs. Previous 48-hour Rainfall</strong></div>
       </div>
       <div id="chart-weather" style="display:none;">
-        <strong>% of Samples with Dry/Wet Weather</strong>
+        <div class="text-center"><strong>% of Samples with Dry/Wet Weather</strong></div>
       </div>
       <div id="img-explore" style="display:none;">
         <img src="http://placehold.it/720x460" alt="">
@@ -165,10 +168,37 @@
       <p>Loading...</p>
       <p><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></p>
     </div>
+    <div class="footnote" id="step3-footnote" style="display:none;">* Note that the Malden River is defined as a Class B waterbody by the state of Massachusetts, for which the primary contact (i.e. swimming) standard of 235 #/100mL applies. However, for the purposes of this story, we will use the secondary contact (i.e. boating) standard of 1,260 #/100mL that applies to Class C waterbodies because boating is the most common recreational use of this river.</div>
   </div>
 
   <hr>
-  <p>Developed by <a href="http://walkerenvres.com">Walker Environmental Research, LLC</a> for the <a href="http://mysticriver.org">Mystic River Watershed Association</a></p>
+  <h2>About</h2>
+
+  <p>This interactive data visualization presents indicator bacteria data collected by the <a href="http://mysticriver.org">Mystic River Watershed Association (MyRWA)</a> at their <a href="http://mysticriver.org/baseline/" target="_blank">baseline monitoring program</a> station on the Malden River from 2002 through 2015.</p>
+
+  <p>The Malden River is about 2.5 miles in length and located within the Mystic River Watershed just north of the city of Boston, MA. A long history of industrial activity and urban development have resulted in extensive contamination of the sediments and water column of this river that poses significant public health risks due to elevated concentrations of various pollutants.</p>
+
+  <p>This visualization focuses on levels of E. coli, which is a type of <a href="https://en.wikipedia.org/wiki/Indicator_bacteria">fecal indicator bacteria</a> commonly used to represent the public health risk associated with fecal contamination in freshwater lakes and rivers.</p>
+
+  <p>The goals of this visualization are to:</p>
+
+  <ol>
+    <li>Present the historical bacteria levels measured by MyRWA at their Baseline Monitoring Station on the Malden River,</li>
+    <li>Explain how bacteria levels relate to public health risk, and</li>
+    <li>Show how rainfall can be used to estimate whether bacteria levels will be too high on any given day.</li>
+  </ol>
+
+  <hr>
+
+  <h2>Technical Report</h2>
+
+  <p>For more information about water quality conditions in the Malden River, see the accompanying technical report that includes more detailed analysis of bacteria levels as well as other water quality variables such as dissolved oxygen, phosphorus, and chlorophyll a.</p>
+
+  <blockquote><a href="#"><strong>Malden River: Exploratory Water Quality Data Analysis</strong></a> prepared for the Mystic River Watershed Association by Jeffrey D Walker, PhD, Walker Environmental Research, LLC. August 9, 2016.</blockquote>
+
+  <hr>
+
+  <p>Website and Interactive Data Visualizations developed for the <a href="http://mysticriver.org">Mystic River Watershed Association</a> by <a href="http://walkerenvres.com">Walker Environmental Research, LLC</a>, September 2016.</p>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>

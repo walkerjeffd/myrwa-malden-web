@@ -31,7 +31,7 @@ var state = {
 state.steps.step1 = {
   enter: function () {
     d3.select('.chart-container').append('div').attr('id', 'map');
-    this.map = L.map('map').setView([42.41, -71.072], 14);
+    this.map = L.map('map').setView([42.41, -71.075], 14);
 
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -91,16 +91,18 @@ state.steps.step2 = {
 
 state.steps.step3 = {
   enter: function () {
+    d3.select('#step3-footnote').style('display', 'block');
+
     if (!state.charts.ts) {
       state.charts.ts = tsChart(d3.select('#chart-ts'));
     }
 
     var colors = state.colors.exceed;
     state.charts.ts
-      .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range([colors.unsafe, colors.safe]))
+      .colors(d3.scale.ordinal().domain(['High Risk', 'Low Risk']).range([colors.unsafe, colors.safe]))
       .colorAccessor(function (d) {
         if (d) {
-          return d.key[3] < state.standard.value ? 'Safe' : 'Unsafe';
+          return d.key[3] < state.standard.value ? 'Low Risk' : 'High Risk';
         }
       })
       .on('renderlet', function(chart) {
@@ -154,6 +156,8 @@ state.steps.step3 = {
     d3.select('#chart-ts').style('display', 'block');
   },
   exit: function (done) {
+    d3.select('#step3-footnote').style('display', 'none');
+
     d3.select('#chart-ts').style('display', 'none');
 
     done();
@@ -163,6 +167,7 @@ state.steps.step3 = {
 state.steps.step4 = {
   enter: function () {
     state.steps.step3.enter();
+    d3.select('#step3-footnote').style('display', 'none');
 
     if (!state.charts.exceed) {
       state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
@@ -233,53 +238,53 @@ state.steps.step6 = {
       state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
     }
 
-    d3.select('#chart-exceed').style('left', '520px').style('top', '220px');
+    d3.select('#chart-exceed').style('top', '220px');
 
     state.charts.exceed.render();
 
     d3.select('#chart-exceed').style('display', 'block');
 
-    d3.select('#slider-weather-container').style('display', 'block');
-    $('#slider-weather').slider({
-      value: state.weather.precip48,
-      min: 0.1,
-      max: 2,
-      step: 0.05,
-      slide: function (event, ui) {
-        $('#slider-weather-value').text(ui.value + ' inches');
-        state.weather.precip48 = ui.value;
+    // d3.select('#slider-weather-container').style('display', 'block');
+    // $('#slider-weather').slider({
+    //   value: state.weather.precip48,
+    //   min: 0.1,
+    //   max: 2,
+    //   step: 0.05,
+    //   slide: function (event, ui) {
+    //     $('#slider-weather-value').text(ui.value + ' inches');
+    //     state.weather.precip48 = ui.value;
 
-        var filters = state.charts.weather.filters();
+    //     var filters = state.charts.weather.filters();
 
-        // reset dimension
-        state.charts.weather.filter(null);
-        state.xf.weather.dim.dispose();
-        state.xf.weather.dim = state.ndx.dimension(function (d) {
-          return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
-        });
-        state.xf.weather.group = state.xf.weather.dim.group();
+    //     // reset dimension
+    //     state.charts.weather.filter(null);
+    //     state.xf.weather.dim.dispose();
+    //     state.xf.weather.dim = state.ndx.dimension(function (d) {
+    //       return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+    //     });
+    //     state.xf.weather.group = state.xf.weather.dim.group();
 
-        state.charts.weather
-          .dimension(state.xf.weather.dim)
-          .group(state.xf.weather.group)
-          .filter([filters])
-          .redraw();
+    //     state.charts.weather
+    //       .dimension(state.xf.weather.dim)
+    //       .group(state.xf.weather.group)
+    //       .filter([filters])
+    //       .redraw();
 
-        state.charts.precip.redraw();
-        state.charts.exceed.redraw();
-      }
-    });
-    $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
+    //     state.charts.precip.redraw();
+    //     state.charts.exceed.redraw();
+    //   }
+    // });
+    // $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
   },
   exit: function (done) {
     d3.select('#chart-weather').style('display', 'none');
     d3.select('#chart-precip').style('display', 'none');
-    d3.select('#chart-exceed').style('left', '0').style('top', '270px').style('display', 'none');
+    d3.select('#chart-exceed').style('top', '0').style('display', 'none');
 
     state.charts.weather.filterAll();
     state.charts.exceed.filterAll();
 
-    d3.select('#slider-weather-container').style('display', 'none');
+    // d3.select('#slider-weather-container').style('display', 'none');
 
     done();
   }
@@ -295,58 +300,57 @@ state.steps.step7 = {
       state.charts.exceed = exceedChart(d3.select('#chart-exceed'));
     }
 
-    d3.select('#chart-exceed').style('left', '520px').style('top', '220px');
+    d3.select('#chart-exceed').style('top', '220px');
 
     state.charts.exceed.render();
 
     d3.select('#chart-exceed').style('display', 'block');
 
-    d3.select('#slider-weather-container').style('display', 'block');
-    $('#slider-weather').slider({
-      value: state.weather.precip48,
-      min: 0.1,
-      max: 2,
-      step: 0.05,
-      slide: function (event, ui) {
-        $('#slider-weather-value').text(ui.value + ' inches');
-        state.weather.precip48 = ui.value;
+    // d3.select('#slider-weather-container').style('display', 'block');
+    // $('#slider-weather').slider({
+    //   value: state.weather.precip48,
+    //   min: 0.1,
+    //   max: 2,
+    //   step: 0.05,
+    //   slide: function (event, ui) {
+    //     $('#slider-weather-value').text(ui.value + ' inches');
+    //     state.weather.precip48 = ui.value;
 
-        var filters = state.charts.weather.filters();
+    //     var filters = state.charts.weather.filters();
 
-        // reset dimension
-        state.charts.weather.filter(null);
-        state.xf.weather.dim.dispose();
-        state.xf.weather.dim = state.ndx.dimension(function (d) {
-          return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
-        });
-        state.xf.weather.group = state.xf.weather.dim.group();
+    //     // reset dimension
+    //     state.charts.weather.filter(null);
+    //     state.xf.weather.dim.dispose();
+    //     state.xf.weather.dim = state.ndx.dimension(function (d) {
+    //       return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+    //     });
+    //     state.xf.weather.group = state.xf.weather.dim.group();
 
-        state.charts.weather
-          .dimension(state.xf.weather.dim)
-          .group(state.xf.weather.group)
-          .filter([filters])
-          .redraw();
+    //     state.charts.weather
+    //       .dimension(state.xf.weather.dim)
+    //       .group(state.xf.weather.group)
+    //       .filter([filters])
+    //       .redraw();
 
-        state.charts.precip.redraw();
-        state.charts.exceed.redraw();
-      }
-    });
-    $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
+    //     state.charts.precip.redraw();
+    //     state.charts.exceed.redraw();
+    //   }
+    // });
+    // $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
   },
   exit: function (done) {
     d3.select('#chart-weather').style('display', 'none');
     d3.select('#chart-precip').style('display', 'none');
-    d3.select('#chart-exceed').style('left', '0').style('top', '270px').style('display', 'none');
+    d3.select('#chart-exceed').style('top', '0').style('display', 'none');
 
     state.charts.weather.filterAll();
     state.charts.exceed.filterAll();
 
-    d3.select('#slider-weather-container').style('display', 'none');
+    // d3.select('#slider-weather-container').style('display', 'none');
 
     done();
   }
 };
-
 
 state.steps.step8 = {
   enter: function () {
@@ -438,7 +442,7 @@ function initialize () {
 
       state.xf.exceed = {};
       state.xf.exceed.dim = state.ndx.dimension(function (d) {
-        return d.value < state.standard.value ? "Safe" : "Unsafe";
+        return d.value < state.standard.value ? "Low Risk" : "High Risk";
       });
       state.xf.exceed.group = state.xf.exceed.dim.group();
 
@@ -499,7 +503,7 @@ function tsChart(el) {
     });
 
   var chart = dc.scatterPlot(el)
-    .width(720)
+    .width(550)
     .height(250)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .x(timeScale)
@@ -517,7 +521,7 @@ function tsChart(el) {
       return d.key[3];
     })
     .excludedOpacity(0.5)
-    .transitionDuration(200);
+    .transitionDuration(500);
 
   // access tip function for customizing renderlet events
   chart.tip = function () {
@@ -560,7 +564,7 @@ function precipChart (el) {
   var colors = state.colors.weather;
 
   var chart = dc.seriesChart(el)
-    .width(500)
+    .width(550)
     .height(400)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .x(precipScale)
@@ -569,7 +573,7 @@ function precipChart (el) {
     .yAxisLabel('E. coli (#/100mL)')
     .xAxisLabel('Previous 48-hour Rainfall (inches)')
     .clipPadding(10)
-    .transitionDuration(0)
+    .transitionDuration(500)
     .dimension(state.xf.precip.dim)
     .group(state.xf.precip.group)
     .keyAccessor(function (d) {
@@ -701,7 +705,7 @@ function precipChart (el) {
 function exceedChart (el) {
   var colors = state.colors.exceed;
   var chart = dc.pieChart(el)
-    .width(300)
+    .width(280)
     .height(200)
     .innerRadius(30)
     .radius(60)
@@ -721,8 +725,8 @@ function exceedChart (el) {
     })
     .dimension(state.xf.exceed.dim)
     .group(state.xf.exceed.group)
-    .transitionDuration(200)
-    .colors(d3.scale.ordinal().domain(['Unsafe', 'Safe']).range([colors.unsafe, colors.safe]))
+    .transitionDuration(500)
+    .colors(d3.scale.ordinal().domain(['High Risk', 'Low Risk']).range([colors.unsafe, colors.safe]))
     .colorAccessor(function (d) {
       return d.key;
     });
@@ -742,7 +746,7 @@ function weatherChart (el) {
     .minAngleForLabel(0)
     .dimension(state.xf.weather.dim)
     .group(state.xf.weather.group)
-    .transitionDuration(200)
+    .transitionDuration(500)
     .colors(d3.scale.ordinal().domain(['Dry', 'Wet']).range([colors.dry, colors.wet]))
     .colorAccessor(function (d) {
       return d.key;
