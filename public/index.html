@@ -9,11 +9,12 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="libs/intro.js/minified/introjs.min.css">
 </head>
 <body>
 
 <div class="container">
-  <div class="text-center">
+  <div class="text-center" id="title">
     <h1>Bacteria Levels and Public Health Risk On the Malden River</h1>
   </div>
 
@@ -159,8 +160,10 @@
       <div id="chart-precip" style="display:none;">
         <div><strong>E. coli Samples vs. Previous 48-hour Rainfall</strong></div>
       </div>
-      <div id="chart-weather" style="display:none;">
-        <div class="text-center"><strong>% of Samples with Dry/Wet Weather</strong></div>
+      <div id="chart-weather-container">
+        <div id="chart-weather">
+          <div class="text-center"><strong>% of Samples with Dry/Wet Weather</strong></div>
+        </div>
       </div>
       <div id="img-explore" style="display:none;">
         <img src="http://placehold.it/720x460" alt="">
@@ -218,6 +221,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.js"></script>
 <script src="http://dc-js.github.io/dc.js/js/dc.js"></script>
 <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+<script src="libs/intro.js/minified/intro.min.js"></script>
 
 <script src="app.js"></script>
 

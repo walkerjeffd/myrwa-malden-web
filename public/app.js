@@ -261,6 +261,28 @@ state.steps.step6 = {
       dc.redrawAll();
     })
 
+
+    var intro = introJs().setOptions({
+      showBullets: false,
+      showStepNumbers: false,
+      doneLabel: 'Ok!',
+      overlayOpacity: 0.1,
+      steps: [
+        {
+          element: '#chart-weather',
+          intro: "Click the wet segment to select only wet weather samples"
+        }
+      ]
+    });
+    setTimeout(function () {
+      intro.start();
+    }, 1000);
+    // introJs('.chart-container').start();
+    // console.log(d3.select('.introjs-helper'));
+    // d3.select('.introjs-helper').attr('style', "width: 800px; height:460px; top:184px;left: 471px;opacity: 0.8;");
+    // introJs('#chart-weather-container').start();
+    // console.log(introJs('#chart-weather'))
+
     // d3.select('#slider-weather-container').style('display', 'block');
     // $('#slider-weather').slider({
     //   value: state.weather.precip48,
@@ -341,7 +363,23 @@ state.steps.step7 = {
       d3.select('#step7-btn-select').style('display', 'block');
       d3.select('#step7-btn-reset').style('display', 'none');
       dc.redrawAll();
-    })
+    });
+
+    var intro = introJs().setOptions({
+      showBullets: false,
+      showStepNumbers: false,
+      doneLabel: 'Ok!',
+      overlayOpacity: 0.1,
+      steps: [
+        {
+          element: '#chart-weather',
+          intro: "Now click the dry segment to select only dry weather samples"
+        }
+      ]
+    });
+    setTimeout(function () {
+      intro.start();
+    }, 1000);
 
     // d3.select('#slider-weather-container').style('display', 'block');
     // $('#slider-weather').slider({

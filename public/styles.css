@@ -139,9 +139,16 @@ svg {
   /*width: 400px;*/
 }
 
-#chart-weather {
+#chart-weather-container {
   position: absolute;
   left: 520px;
+  width: 300px;
+  height: 205px;
+}
+
+#chart-weather {
+  /*position: absolute;*/
+  /*left: 520px;*/
 }
 
 #slider-weather-container {
