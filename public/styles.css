@@ -10,6 +10,13 @@ body {
   border-bottom: 1px solid #aaa;
   padding-left: 30px;
   padding-right: 30px;
+  padding-bottom: 16px;
+}
+
+.explore-container {
+  width: 1138px;
+  height: 620px;
+  position: relative;
 }
 
 h1 {
@@ -122,21 +129,17 @@ svg {
 
 #chart-ts {
   position: absolute;
-  /*width: 720px;*/
-  /*top: 10px;*/
   left: 0;
 }
 
 #chart-exceed {
   position: absolute;
-  /*width: 300px;*/
   top: 0;
   left: 520px;
 }
 
 #chart-precip {
   position: absolute;
-  /*width: 400px;*/
 }
 
 #chart-weather {
@@ -144,16 +147,29 @@ svg {
   left: 520px;
 }
 
+#chart-month {
+  position: absolute;
+}
+
+#chart-year {
+  position: absolute;
+}
+
+#chart-year .x.axis text {
+  text-anchor: end !important;
+  transform: translate(-12px, 7px)rotate(-90deg);
+}
+
 #slider-weather-container {
   position: absolute;
-  top: 420px;
-  left: 77px;
-  width: 300px;
+  /*top: 420px;
+  left: 77px;*/
+  width: 340px;
   height: 50px;
 }
 
 #slider-weather {
-  width: 298px;
+  width: 335px;
   margin-bottom: 10px;
 }
 

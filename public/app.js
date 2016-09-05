@@ -407,20 +407,6 @@ d3.selectAll('.btn-step').on('click', function () {
   switchStep(step);
 });
 
-// function selectWet() {
-//   state.charts.weather.filterAll();
-//   state.charts.weather.filter('Wet');
-//   dc.redrawAll();
-//   d3.select('#step6-additional-annotation').style('display', 'block');
-// }
-
-function selectDry() {
-  state.charts.weather.filterAll();
-  state.charts.weather.filter('Dry');
-  dc.redrawAll();
-  d3.select('#step7-additional-annotation').style('display', 'block');
-}
-
 function switchStep (step) {
   d3.selectAll('.btn-step').classed('btn-primary', false).classed('btn-default', true);
   d3.select('#' + step).classed('btn-default', false);
@@ -521,6 +507,226 @@ function initialize () {
         });
 
       switchStep('step1');
+    });
+}
+
+function initializeExplorer () {
+  var isoFormat = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
+
+  d3.csv('data/wq.csv')
+    .row(function (d) {
+      return {
+        id: +d.id,
+        site: d.site,
+        param: d.param,
+        datetime: isoFormat.parse(d.datetime),
+        value: +d.value,
+        precip: +d.precip,
+        precip48: +d.precip48,
+      }
+    })
+    .get(function (error, rows) {
+      var valueFormat = d3.format('.2f');
+      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+      if (error) {
+        console.log("Error: ", error);
+        return;
+      }
+
+      // keep only ECOLI data collected through 2015 (exclude 2016 data)
+      state.data = rows.filter(function (d) {
+        return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015 && d.site === 'MAR036';
+      });
+
+      state.ndx = crossfilter(state.data);
+      state.all = state.ndx.groupAll();
+
+      state.xf = {};
+
+      state.xf.time = {};
+      state.xf.time.dim = state.ndx.dimension(function (d) {
+        return [d.id, d.site, d.datetime, d.value];
+      });
+      state.xf.time.group = state.xf.time.dim.group();
+
+      state.xf.exceed = {};
+      state.xf.exceed.dim = state.ndx.dimension(function (d) {
+        return d.value < state.standard.value ? "Low Risk" : "High Risk";
+      });
+      state.xf.exceed.group = state.xf.exceed.dim.group();
+
+      state.xf.precip = {};
+      state.xf.precip.dim = state.ndx.dimension(function (d) {
+        return [d.id, d.site, d.datetime, d.precip48, d.value];
+      });
+      state.xf.precip.group = state.xf.precip.dim.group();
+
+      state.xf.weather = {};
+      state.xf.weather.dim = state.ndx.dimension(function (d) {
+        return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+      });
+      state.xf.weather.group = state.xf.weather.dim.group();
+
+      state.xf.month = {};
+      state.xf.month.dim = state.ndx.dimension(function (d) {
+        return months[d.datetime.getMonth()];
+      });
+      state.xf.month.group = state.xf.month.dim.group();
+
+      state.xf.year = {};
+      state.xf.year.dim = state.ndx.dimension(function (d) {
+        return d.datetime.getFullYear();
+      });
+      state.xf.year.group = state.xf.year.dim.group();
+
+      state.xf.site = {};
+      state.xf.site.dim = state.ndx.dimension(function (d) {
+        return d.site;
+      });
+      state.xf.site.group = state.xf.site.dim.group();
+
+      d3.select('#chart-ts').style('left', '280px').style('top', '0');
+      d3.select('#chart-exceed').style('left', '0').style('top', '0');
+      d3.select('#chart-precip').style('left', '280px').style('top', '300px');
+      d3.select('#chart-weather').style('left', '0').style('top', '300px');
+      d3.select('#chart-month').style('left', '800px').style('top', '0');
+      d3.select('#chart-year').style('left', '800px').style('top', '300px');
+
+      state.charts.ts = tsChart(d3.select('#chart-ts'));
+      state.charts.ts
+        .colors(d3.scale.ordinal()
+                  .domain(['High Risk', 'Low Risk'])
+                  .range([state.colors.exceed.unsafe, state.colors.exceed.safe]))
+        .colorAccessor(function (d) {
+          if (d) {
+            return d.key[3] < state.standard.value ? 'Low Risk' : 'High Risk';
+          }
+        })
+        .on('renderlet', function(chart) {
+          var tip = state.charts.ts.tip();
+
+          chart.select("svg").call(tip);
+
+          chart.selectAll("path.symbol")
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
+
+          var extra_data = [
+            {
+              x: chart.x().range()[0],
+              y: chart.y()(state.standard.value)
+            }, {
+              x: chart.x().range()[1],
+              y: chart.y()(state.standard.value)
+            }
+          ];
+
+          var line = d3.svg.line()
+              .x(function(d) { return d.x; })
+              .y(function(d) { return d.y; })
+              .interpolate('linear');
+
+          var chartBody = chart.select('g.chart-body');
+
+          var path = chartBody.selectAll('path.extra').data([extra_data]);
+          path.enter().append('path').attr({
+            class: 'extra',
+            stroke: 'red',
+            id: 'hline',
+            'stroke-dasharray': '5,5'
+          });
+          path.attr('d', line);
+
+          var text = chartBody.selectAll('text.hline-label').data([0]);
+
+          text.enter()
+            .append('text')
+              .attr('text-anchor', 'end')
+              .attr('class', 'hline-label')
+              .attr('dy', '-0.5em');
+          text.text(state.standard.label)
+              .attr('x', chart.x().range()[1])
+              .attr('y', chart.y()(state.standard.value));
+        });
+
+      state.charts.exceed = exceedChart(d3.select('#chart-exceed')).height(250);
+
+      state.charts.precip = precipChart(d3.select('#chart-precip'))
+        .height(250)
+        .transitionDuration(0);
+      state.charts.precip.x().domain([0, 2.5]);
+
+      state.charts.weather = weatherChart(d3.select('#chart-weather'));
+      state.charts.weather
+        .height(250)
+        .dimension(state.xf.weather.dim)
+        .group(state.xf.weather.group);
+
+      state.charts.month = dc.barChart('#chart-month');
+      state.charts.month
+        .width(380)
+        .height(235)
+        .colors(['#666'])
+        .x(d3.scale.ordinal().domain(months))
+        .yAxisLabel("# of Samples")
+        .xUnits(dc.units.ordinal)
+        .dimension(state.xf.month.dim)
+        .group(state.xf.month.group);
+
+      state.charts.year = dc.barChart('#chart-year');
+      state.charts.year
+        .width(380)
+        .height(235)
+        .colors(['#666'])
+        .x(d3.scale.ordinal())
+        .yAxisLabel("# of Samples")
+        .xUnits(dc.units.ordinal)
+        .dimension(state.xf.year.dim)
+        .group(state.xf.year.group);
+
+      d3.select('#slider-weather-container').style('left', '357px').style('top', '570px');
+      $('#slider-weather').slider({
+        value: state.weather.precip48,
+        min: 0.1,
+        max: 2,
+        step: 0.05,
+        slide: function (event, ui) {
+          $('#slider-weather-value').text(ui.value + ' inches');
+          state.weather.precip48 = ui.value;
+
+          var filters = state.charts.weather.filters();
+
+          // reset dimension
+          state.charts.weather.filter(null);
+          state.xf.weather.dim.dispose();
+          state.xf.weather.dim = state.ndx.dimension(function (d) {
+            return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
+          });
+          state.xf.weather.group = state.xf.weather.dim.group();
+
+          state.charts.weather
+            .dimension(state.xf.weather.dim)
+            .group(state.xf.weather.group)
+            .filter([filters])
+            .redraw();
+
+          dc.redrawAll();
+        }
+      });
+      $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
+
+      dc.renderAll();
+
+      d3.select('.loading')
+        .transition()
+        .delay(500)
+        .duration(1000)
+        .style('opacity', 0)
+        .each("end", function (d) {
+          d3.select(this).style('display', 'none');
+        });
     });
 }
 
