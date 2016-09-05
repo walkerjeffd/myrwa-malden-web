@@ -587,12 +587,14 @@ function initializeExplorer () {
       });
       state.xf.site.group = state.xf.site.dim.group();
 
-      d3.select('#chart-ts').style('left', '280px').style('top', '0');
-      d3.select('#chart-exceed').style('left', '0').style('top', '0');
-      d3.select('#chart-precip').style('left', '280px').style('top', '300px');
-      d3.select('#chart-weather').style('left', '0').style('top', '300px');
-      d3.select('#chart-month').style('left', '800px').style('top', '0');
-      d3.select('#chart-year').style('left', '800px').style('top', '300px');
+      d3.select('#chart-ts').style('left', '280px').style('top', '60px');
+      d3.select('#chart-exceed').style('left', '0').style('top', '60px');
+      d3.select('#chart-precip').style('left', '280px').style('top', '360px');
+      d3.select('#chart-weather').style('left', '0').style('top', '360px');
+      d3.select('#chart-month').style('left', '800px').style('top', '60px');
+      d3.select('#chart-year').style('left', '800px').style('top', '360px');
+      d3.select('#slider-weather-container').style('left', '357px').style('top', '630px');
+      d3.select('#toolbar-btn').style('right', '0').style('top', '0');
 
       state.charts.ts = tsChart(d3.select('#chart-ts'));
       state.charts.ts
@@ -686,7 +688,6 @@ function initializeExplorer () {
         .dimension(state.xf.year.dim)
         .group(state.xf.year.group);
 
-      d3.select('#slider-weather-container').style('left', '357px').style('top', '570px');
       $('#slider-weather').slider({
         value: state.weather.precip48,
         min: 0.1,
@@ -726,8 +727,78 @@ function initializeExplorer () {
         .style('opacity', 0)
         .each("end", function (d) {
           d3.select(this).style('display', 'none');
+          startTour();
         });
     });
+}
+
+function updateRecreation (selected) {
+  var options = {
+    swim: {
+      label: 'Swimming Standard',
+      value: 235
+    },
+    boat: {
+      label: 'Boating Standard',
+      value: 1260
+    }
+  }
+
+  state.standard = options[selected];
+
+  var filters = state.charts.exceed.filters();
+
+  // reset dimension
+  state.charts.exceed.filter(null);
+  state.xf.exceed.dim.dispose();
+  state.xf.exceed.dim = state.ndx.dimension(function (d) {
+    return d.value < state.standard.value ? "Low Risk" : "High Risk";
+  });
+  state.xf.exceed.group = state.xf.exceed.dim.group();
+
+  state.charts.exceed
+    .dimension(state.xf.exceed.dim)
+    .group(state.xf.exceed.group)
+    .filter([filters]);
+
+  dc.redrawAll();
+}
+
+function resetAll() {
+  dc.filterAll();
+  dc.redrawAll();
+}
+
+function startTour () {
+  var intro = introJs();
+  intro.setOptions({
+    showStepNumbers: false,
+    steps: [
+      {
+        intro: '<strong>Welcome</strong> to the Data Explorer for Bacteria Levels and Public Health Risks on the Malden River',
+        width: '400px'
+      },
+      {
+        element: '#chart-ts',
+        intro: 'Each point shows the E. coli level for a single sample.'
+      },
+      {
+        element: '#chart-month',
+        intro: 'Click on one or more bars to select only samples within given months.'
+      },
+      {
+        element: '#chart-year',
+        intro: 'Select individual years',
+        position: 'top'
+      },
+      {
+        element: '#slider-weather-container',
+        intro: 'Change the rainfall threshold for assigning wet/dry weather categories',
+        position: 'top'
+      }
+    ]
+  })
+  intro.start();
 }
 
 function tsChart(el) {
