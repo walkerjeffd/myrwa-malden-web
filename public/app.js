@@ -775,26 +775,51 @@ function startTour () {
     showStepNumbers: false,
     steps: [
       {
-        intro: '<strong>Welcome</strong> to the Data Explorer for Bacteria Levels and Public Health Risks on the Malden River',
-        width: '400px'
+        intro: '<p class="text-center">Welcome to the<br><strong>Data Explorer</strong><br>for<br><strong>Bacteria Levels and Public Health Risks on the Malden River</strong></p>'
       },
       {
         element: '#chart-ts',
-        intro: 'Each point shows the E. coli level for a single sample.'
+        intro: '<p>This chart shows monthly E. coli levels measured by MyRWA at station MAR036 over time.</p><p>Each circle represents one sample and is colored based on whether it is above (red) or below (blue) the water quality standard for the selected type of recreation.</p>'
       },
       {
-        element: '#chart-month',
-        intro: 'Click on one or more bars to select only samples within given months.'
+        element: '#chart-exceed',
+        intro: '<p>The fraction of all samples representing high and low public health risks.<p><p>You can click on either segment of the chart to select only samples with high or low public health risk.</p>'
       },
       {
-        element: '#chart-year',
-        intro: 'Select individual years',
+        element: '.form-group',
+        intro: '<p>Use this dropdown to select which type of recreation you are interested in.</p><p>Changing this option will change the state water quality standard used to determine which samples pose high and low public health risks.</p>'
+      },
+      {
+        element: '#chart-precip',
+        intro: '<p>This chart shows the relationship between E. coli levels and the amount of rainfall over the 48 hours before each sample was collected.</p><p>Each point is colored based on whether the sample is associated with wet or dry weather.</p>',
+        position: 'top'
+      },
+      {
+        element: '#chart-weather',
+        intro: '<p>The fraction of all samples that were collected after wet and dry weather.</p><p>You can click on either segment of the chart to select only samples associated with each category.</p>',
         position: 'top'
       },
       {
         element: '#slider-weather-container',
-        intro: 'Change the rainfall threshold for assigning wet/dry weather categories',
+        intro: '<p>Use this slider to change the rainfall threshold that determines which samples were collected after dry or wet weather.</p><p>Increasing the threshold means that more rainfall must occur in order for a sample to be associated with wet weather.</p>',
         position: 'top'
+      },
+      {
+        element: '#chart-month',
+        intro: '<p>This chart shows the number of samples collected in each month of the year.</p><p>You can click on one or more of the bars to focus on specific months and seasons. For example, to look at the public health risks during the summer recreational season, select all months from May through September.</p>'
+      },
+      {
+        element: '#chart-year',
+        intro: '<p>This chart shows the number of samples collected in each year.</p><p>You can click on one or more bars to focus on shorter periods of the dataset. For example, to explore the public health risks based on only the past 5 years of data, select all years from 2011 through 2015.</p>',
+        position: 'top'
+      },
+      {
+        element: '#btn-reset',
+        intro: '<p>Click this button to reset the dashboard and clear all selections in the charts below.</p>'
+      },
+      {
+        element: '#btn-help',
+        intro: '<p>Click this button to repeat this tour.</p>'
       }
     ]
   })
