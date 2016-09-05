@@ -1,5 +1,5 @@
-Malden River Water Quality Website
-==================================
+Bacteria Levels on the Malden River Website and Interactive Data Visualizations
+===============================================================================
 
 Developed by [Jeffrey D Walker PhD, Walker Environmental Research LLC](http://walkerenvres.com) for the [Mystic River Watershed Association](http://mysticriver.org).
 
