@@ -1,0 +1,17 @@
+{
+  "name": "myrwa-malden-web",
+  "description": "Malden River Water Quality Website ==================================",
+  "main": "index.js",
+  "authors": [
+    "Jeff Walker <walker.jeff.d@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/walkerjeffd/myrwa-malden-web",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
