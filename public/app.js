@@ -9,13 +9,8 @@ var state = {
         safe: '#00BFFF'
       },
       weather: {
-        // 'dry': '#D1E231',
-        // dry: '#CCAD3A',
-        // dry: '#B2DF8A',
         dry: '#FF7F00',
         wet: '#33A02C'
-        // wet: '#A6CEE3'
-        // wet: '#EA6CDD'
       }
     },
     standard: {
@@ -45,14 +40,6 @@ state.steps.step1 = {
       .on('mouseout', function (e) {
         this.closePopup();
       });
-    // L.marker([42.4053, -71.07191]).addTo(this.map)
-    //   .bindPopup('Station: <strong>MWRA176</strong><br>Organization: <strong>Massachusetts Water Resources Authority</strong>')
-    //   .on('mouseover', function (e) {
-    //     this.openPopup();
-    //   })
-    //   .on('mouseout', function (e) {
-    //     this.closePopup();
-    //   });
   },
   exit: function (done) {
     this.map.remove();
@@ -259,39 +246,7 @@ state.steps.step6 = {
       d3.select('#step6-btn-select').style('display', 'block');
       d3.select('#step6-btn-reset').style('display', 'none');
       dc.redrawAll();
-    })
-
-    // d3.select('#slider-weather-container').style('display', 'block');
-    // $('#slider-weather').slider({
-    //   value: state.weather.precip48,
-    //   min: 0.1,
-    //   max: 2,
-    //   step: 0.05,
-    //   slide: function (event, ui) {
-    //     $('#slider-weather-value').text(ui.value + ' inches');
-    //     state.weather.precip48 = ui.value;
-
-    //     var filters = state.charts.weather.filters();
-
-    //     // reset dimension
-    //     state.charts.weather.filter(null);
-    //     state.xf.weather.dim.dispose();
-    //     state.xf.weather.dim = state.ndx.dimension(function (d) {
-    //       return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
-    //     });
-    //     state.xf.weather.group = state.xf.weather.dim.group();
-
-    //     state.charts.weather
-    //       .dimension(state.xf.weather.dim)
-    //       .group(state.xf.weather.group)
-    //       .filter([filters])
-    //       .redraw();
-
-    //     state.charts.precip.redraw();
-    //     state.charts.exceed.redraw();
-    //   }
-    // });
-    // $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
+    });
   },
   exit: function (done) {
     d3.select('#chart-weather').style('display', 'none');
@@ -303,8 +258,6 @@ state.steps.step6 = {
 
     state.charts.weather.filterAll();
     state.charts.exceed.filterAll();
-
-    // d3.select('#slider-weather-container').style('display', 'none');
 
     done();
   }
@@ -341,39 +294,7 @@ state.steps.step7 = {
       d3.select('#step7-btn-select').style('display', 'block');
       d3.select('#step7-btn-reset').style('display', 'none');
       dc.redrawAll();
-    })
-
-    // d3.select('#slider-weather-container').style('display', 'block');
-    // $('#slider-weather').slider({
-    //   value: state.weather.precip48,
-    //   min: 0.1,
-    //   max: 2,
-    //   step: 0.05,
-    //   slide: function (event, ui) {
-    //     $('#slider-weather-value').text(ui.value + ' inches');
-    //     state.weather.precip48 = ui.value;
-
-    //     var filters = state.charts.weather.filters();
-
-    //     // reset dimension
-    //     state.charts.weather.filter(null);
-    //     state.xf.weather.dim.dispose();
-    //     state.xf.weather.dim = state.ndx.dimension(function (d) {
-    //       return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
-    //     });
-    //     state.xf.weather.group = state.xf.weather.dim.group();
-
-    //     state.charts.weather
-    //       .dimension(state.xf.weather.dim)
-    //       .group(state.xf.weather.group)
-    //       .filter([filters])
-    //       .redraw();
-
-    //     state.charts.precip.redraw();
-    //     state.charts.exceed.redraw();
-    //   }
-    // });
-    // $('#slider-weather-value').text($('#slider-weather').slider('value') + ' inches');
+    });
   },
   exit: function (done) {
     d3.select('#chart-weather').style('display', 'none');
@@ -385,8 +306,6 @@ state.steps.step7 = {
 
     state.charts.weather.filterAll();
     state.charts.exceed.filterAll();
-
-    // d3.select('#slider-weather-container').style('display', 'none');
 
     done();
   }
@@ -429,7 +348,7 @@ function switchAnnotation (step) {
   d3.select('#' + step + '-annotation').style('display', 'block');
 }
 
-function initialize () {
+function initializeNarrative () {
   var isoFormat = d3.time.format.utc("%Y-%m-%dT%H:%M:%SZ");
 
   d3.csv('data/wq.csv')
@@ -483,12 +402,6 @@ function initialize () {
         return d.precip48 >= state.weather.precip48 ? "Wet" : "Dry";
       });
       state.xf.weather.group = state.xf.weather.dim.group();
-
-      // state.xf.month = {};
-      // state.xf.month.dim = state.ndx.dimension(function (d) {
-      //   return months[d.datetime.getMonth()];
-      // });
-      // state.xf.month.group = state.xf.month.dim.group();
 
       state.xf.site = {};
       state.xf.site.dim = state.ndx.dimension(function (d) {
@@ -775,7 +688,7 @@ function startTour () {
     showStepNumbers: false,
     steps: [
       {
-        intro: '<p class="text-center">Welcome to the<br><strong>Data Explorer</strong><br>for<br><strong>Bacteria Levels and Public Health Risks on the Malden River</strong></p>'
+        intro: '<p class="text-center" style="font-size:20px">Welcome to the<br><strong>Data Explorer</strong><br>for<br><strong>Bacteria Levels and Public Health Risks on the Malden River</strong></p><p>Click Next to begin the tour of this dashboard, or Skip to quit the tour and get right to exploring the data.</p>'
       },
       {
         element: '#chart-ts',
@@ -928,11 +841,6 @@ function precipChart (el) {
       return d.key[3] < state.weather.precip48 ? "Dry" : "Wet";
     })
     .colors(d3.scale.ordinal().domain(['Dry', 'Wet']).range([colors.dry, colors.wet]))
-    // .colorAccessor(function (d) {
-    //   if (d) {
-    //     return d.key[0] < state.weather.precip48 ? "Dry" : "Wet";
-    //   }
-    // })
     .chart(function (c) {
       return dc.scatterPlot(c)
         .symbol('circle');
