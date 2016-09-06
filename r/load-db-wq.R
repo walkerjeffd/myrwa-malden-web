@@ -24,7 +24,8 @@ wq_malden <- wq %>%
   filter(ProjectID %in% c("BASE"),
          LocationID %in% c("MAR036"),
          SampleTypeID == "S",
-         CharacteristicID == "ECOLI") %>%
+         CharacteristicID == "ECOLI",
+         year(Datetime) <= 2015) %>%
   droplevels %>%
   select(id=ID, site=LocationID, visit=VisitID, param=CharacteristicID,
          datetime=Datetime, value=ResultValue, units=Units) %>%
