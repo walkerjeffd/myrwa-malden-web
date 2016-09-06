@@ -21,23 +21,21 @@ close(ch)
 # stn <- read_csv("db/db_stn_malden.csv")
 
 wq_malden <- wq %>%
-  filter(ProjectID %in% c("BASE", "CSORWM"),
-         LocationID %in% c("MAR036", "MWRA176"),
+  filter(ProjectID %in% c("BASE"),
+         LocationID %in% c("MAR036"),
          SampleTypeID == "S",
          CharacteristicID == "ECOLI") %>%
   droplevels %>%
   select(id=ID, site=LocationID, visit=VisitID, param=CharacteristicID,
          datetime=Datetime, value=ResultValue, units=Units) %>%
-  mutate(organization = plyr::revalue(site, c("MAR036"="MyRWA",
-                                              "MWRA176"="MWRA")))
+  arrange(datetime)
 
 stn_malden <- stn %>%
   filter(LocationID %in% as.character(unique(wq_malden$site))) %>%
   droplevels %>%
   select(site = LocationID, description = LocationDescription,
          latitude = Latitude, longitude = Longitude) %>%
-  mutate(organization = plyr::revalue(site, c("MAR036"="MyRWA",
-                                              "MWRA176"="MWRA")))
+  mutate(organization = plyr::revalue(site, c("MAR036"="MyRWA")))
 
 
 # load precip -------------------------------------------------------------

@@ -369,10 +369,7 @@ function initializeNarrative () {
         return;
       }
 
-      // keep only ECOLI data collected through 2015 (exclude 2016 data)
-      state.data = rows.filter(function (d) {
-        return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015 && d.site === 'MAR036';
-      });
+      state.data = rows;
 
       state.ndx = crossfilter(state.data);
       state.all = state.ndx.groupAll();
@@ -442,16 +439,12 @@ function initializeExplorer () {
       var valueFormat = d3.format('.2f');
       var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-
       if (error) {
         console.log("Error: ", error);
         return;
       }
 
-      // keep only ECOLI data collected through 2015 (exclude 2016 data)
-      state.data = rows.filter(function (d) {
-        return d.param === "ECOLI" && d.datetime.getFullYear() <= 2015 && d.site === 'MAR036';
-      });
+      state.data = rows;
 
       state.ndx = crossfilter(state.data);
       state.all = state.ndx.groupAll();
