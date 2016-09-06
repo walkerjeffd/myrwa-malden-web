@@ -74,7 +74,7 @@
       <div class="annotation" id="step4-annotation">
         <h2>Exceedence Frequency</h2>
         <p>By counting the number of samples above and below the standard, and then dividing by the total number of samples, we can estimate the percent of time that bacteria levels indicate high and low public health risk.</p>
-        <p>The bottom chart states that 30% of all samples over the past 14 years had E. coli levels exceeding the boating standard.</p>
+        <p>The donut chart on the far right states that 30% of all samples over the past 14 years had E. coli levels exceeding the boating standard.</p>
         <p>But why do some days have higher bacteria levels than others? Is there a way to predict whether E. coli levels are above or below the standard on any given day?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
@@ -86,9 +86,9 @@
       <div class="annotation" id="step5-annotation">
         <h2>E. coli vs. Rainfall</h2>
         <p>Rainfall is a often good predictor of E. coli levels in urban rivers because it generates stormwater runoff that can contain high levels of bacteria.</p>
-        <p>The chart on the left shows the relationship between E. coli and total rainfall over the previous 48 hours of when each sample was collected.</p>
-        <p>The samples are categorized according to dry and wet weather. Samples collected after 0.25 inches or more of rainfall are considered as wet weather, the others as dry weather.</p>
-        <p>The chart on the right states that 23% of all samples were collected under wet weather conditions.</p>
+        <p>This chart shows the relationship between E. coli and the amount of rain that fell over the 48 hours before each sample was collected.</p>
+        <p>The samples are categorized as being collected after dry or wet weather. Samples collected after 0.25 inches or more of rainfall are considered wet weather samples, and the others are considered dry weather samples.</p>
+        <p>The chart on the right states that 23% of all samples were collected after wet weather conditions.</p>
         <p>Do wet weather samples tend to have higher E. coli levels than the dry weather samples?</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
@@ -99,14 +99,15 @@
       </div>
       <div class="annotation" id="step6-annotation">
         <h2>Wet Weather Exceedences</h2>
-        <p>Based on the scatter plot, it looks like wet weather samples tend to exceed the standard more often than dry weather samples. Click this button to select only the wet weather samples.</p>
+        <p>Based on the scatter plot, it looks like wet weather samples tend to exceed the standard more often than dry weather samples.</p>
+        <p>Click this button to select only the wet weather samples and then we can see what % of wet weather samples exceed the standard and have high risk.</p>
         <p>
           <button class="btn btn-primary btn-block btn-xs" id="step6-btn-select">Select Wet Weather Samples</button>
           <button class="btn btn-primary btn-block btn-xs" id="step6-btn-reset" style="display:none;">Reset to All Samples</button>
         </p>
         <div id="step6-additional-annotation" style="display:none">
-          <p>We now see that 76% of <em>wet weather</em> samples were above the boating standard, and only 24% were below.</p>
-          <p>So on any given day, if it has rained 0.25 inches or more over the previous 48 hours, then we can expect a greater chance that bacteria levels will be too high.</p>
+          <p>Now that only wet weather samples are selected, the chart in the lower right shows that 76% of these <em>wet weather</em> samples were above the boating standard, and only 24% were below.</p>
+          <p>So on any given day, if there has been 0.25 inches or more rainfall over the previous 48 hours, then we can expect a greater chance that bacteria levels will be too high.</p>
           <p>Next, let's look at often dry weather samples exceed the standard.</p>
           <div class="text-center" style="margin-top:20px">
             <div class="btn-group" role="group">
@@ -125,8 +126,9 @@
         </p>
         <div id="step7-additional-annotation" style="display:none">
           <p>Now we see that only 16% of the <em>dry weather</em> samples were above the standard, and 84% were below.</p>
-          <p>So even if there has been little or no recent rainfall, there is still a small chance that bacteria levels be too high and indicate a public health risk.</p>
-          <p>However, this chance is much lower than during wet weather, which was more frequently associated with high public health risk.</p>
+          <p>So even if there has been little or no recent rainfall on any given day, there is still a small chance that bacteria levels will exceed the boating standard and pose a high public health risk.</p>
+          <p>However, this chance (16%) is much lower than the chance of an exceedence during wet weather (76%) that we saw previously.</p>
+          <p>In summary, this dataset has shown us that at this location on the Malden River, the chance that bacteria levels will exceed the boating standard is much greater during wet weather than during dry weather.</p>
           <div class="text-center" style="margin-top:20px">
             <div class="btn-group" role="group">
               <button type="button" class="btn btn-default" onclick="switchStep('step6')"><i class="fa fa-angle-double-left" aria-hidden="true"></i> Prev</button>
@@ -136,10 +138,10 @@
         </div>
       </div>
       <div class="annotation" id="step8-annotation">
-        <h2>Summary</h2>
-        <p>Thanks for visiting and learning about the water quality conditions and the effect of rainfall on public health risks in the Malden River.</p>
-        <p>If you want to explore the data further, click the image to the right to open an interactive dashboard.</p>
-        <p>The dashboard contains many of the charts we have already seen as well as some additional charts and controls to compare different types of recreation and varying rainfall thresholds for defining dry and wet weather conditions.</p>
+        <h2>The End</h2>
+        <p>Thanks for visiting and learning about the effect of rainfall on bacteria levels and public health risk on the Malden River.</p>
+        <p>If you want to explore the data further, click the image to the right to open the interactive data explorer where you can continue to drill down into the dataset.</p>
+        <p>The data explorer contains many of the charts we have already seen as well as some additional charts and controls to investigate public health risks for both swimming as well as boating, to change the rainfall threshold for defining dry and wet weather conditions, and to focus on specific months, seasons, and years of data.</p>
         <p>If you have any questions about this site or the underlying dataset, please feel free to contact us at <a href="mailto:contact@mysticriver.org">contact@mysticriver.org</a>.</p>
         <div class="text-center" style="margin-top:20px">
           <div class="btn-group" role="group">
