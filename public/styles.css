@@ -255,3 +255,7 @@ svg {
   top: 50%;
   left: 100%;
 }
+
+.introjs-tooltip {
+  min-width: 300px;
+}
